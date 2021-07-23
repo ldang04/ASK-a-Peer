@@ -29,11 +29,11 @@ router.get('/me', auth, async (req, res) => {
     }
 });
 
-// @route   POST /profiles
+// @route   POST /profiles/me
 // @desc    Update a user profile (a user should have one by default)
 // @access  Private
 
-router.post('/', auth , async (req, res) => {
+router.post('/me', auth , async (req, res) => {
     const {
         bio, 
         backgroundPicture
@@ -64,6 +64,8 @@ router.post('/', auth , async (req, res) => {
     
 });
 
+// @ TODO: =====
+
 // @route   POST /profiles/:profile_id
 // @desc    Add a space to a users' profile
 // @access  Private
@@ -77,6 +79,8 @@ router.post('/', auth , async (req, res) => {
 // @route   POST /profiles/:profile_id
 // @desc    Add an answer to a users' profile
 // @access  Private
+
+// =====
 
 // @route   GET /profiles/:user_id
 // @desc    Get another user's profile by user id
