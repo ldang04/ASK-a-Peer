@@ -20,19 +20,7 @@ const UserSchema = new mongoose.Schema({
     },
     admin: {
         type: Boolean
-    }, 
-    questions: [
-        {
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'question'
-        }
-    ], 
-    answers: [
-        {
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'answer'
-        }
-    ]
+    }
 });
 
 module.exports = User = mongoose.model('user', UserSchema);

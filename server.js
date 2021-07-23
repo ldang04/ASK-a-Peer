@@ -13,12 +13,11 @@ app.get('/', (req, res) => res.send('And so it begins...'));
 
 // Define routes 
 app.use('/auth', require('./routes/auth'));
-app.use('/posts', require('./routes/posts'));
+app.use('/questions', require('./routes/questions'));
+app.use('/answers', require('./routes/answers'));
 app.use('/profiles', require('./routes/profile'));
 app.use('/spaces', require('./routes/spaces'));
 app.use('/users', require('./routes/users'));
-
-
 
 const PORT = process.env.PORT || 5000;
 

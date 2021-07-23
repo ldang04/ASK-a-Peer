@@ -1,7 +1,11 @@
 const mongoose = require('mongoose'); 
 
 const SpaceSchema = new mongoose.Schema({
-    title: String, 
+    title: {
+        type: String, 
+        required: true, 
+        unique: true
+    }, 
     questions: [
         {
             type: mongoose.Schema.Types.ObjectId, 
@@ -18,6 +22,21 @@ const SpaceSchema = new mongoose.Schema({
         {
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'user'
+        }
+    ], 
+    modNames: [
+        {
+            type: String
+        }
+    ],
+    modAvatars: [
+        {
+            type: String
+        }
+    ], 
+    modLinks : [
+        {
+            type: String
         }
     ], 
     members: [

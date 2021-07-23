@@ -1,9 +1,13 @@
+//=====================================================================
+// @TODO:   populate profiles with users' questions, answers, and spaces. 
+//=====================================================================
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const { check, validationResult } = require('express-validator');
 
 const Profile = require('../models/Profile');
+const User = require('../models/User');
 
 // @route   GET /profiles/me
 // @desc    Get current users' profile
@@ -60,7 +64,21 @@ router.post('/', auth , async (req, res) => {
     
 });
 
-// @route   POST /profiles/:user_id
+// @route   POST /profiles/:profile_id
+// @desc    Add a space to a users' profile
+// @access  Private
+
+
+// @route   POST /profiles/:profile_id
+// @desc    Add a question to a users' profile
+// @access  Private
+
+
+// @route   POST /profiles/:profile_id
+// @desc    Add an answer to a users' profile
+// @access  Private
+
+// @route   GET /profiles/:user_id
 // @desc    Get another user's profile by user id
 // @access  Public
 
@@ -68,13 +86,29 @@ router.get('/:user_id', async (req,res) => {
     try {
         const profile = await Profile.findOne({ user: req.params.user_id });
 
-        if(!profile){
-            res.status(404).send('Profile not found');
-        }
+        if(!profile) res.status(404).send('Profile not found');
+        
         res.json(profile);
     } catch(err) {
         console.error(err.message);
         res.status(500).send('Server Error');
+    }
+});
+
+// @route   DELETE /profiles/:user_id
+// @desc    Delete a user's own profile (+ user); 
+// @access  Private
+
+router.delete('/', auth, async (req,res) => {
+    try {
+        // Remove profile and user
+        await Profile.findOneAndRemove({ user: req.user.id });
+        await User.findOneAndRemove({ _id: req.user.id });
+
+        res.json({ msg: 'User deleted' });
+    } catch (err) {
+        console.error(err.message);
+        res.json(500).send('Server Error');
     }
 });
 
