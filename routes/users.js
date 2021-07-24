@@ -5,13 +5,14 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const { check, validationResult } = require('express-validator');
+const auth = require('../middleware/auth');
 
 const User = require('../models/User');
-const Profile = require('../models/Profile');
 
 // @route   POST /users
-// @desc    Register a user and create default profile
+// @desc    Register a user 
 // @access  Public
+
 router.post('/', [ // validate that required fields are filled. 
     check('username', 'Username is required')
     .not()
@@ -73,23 +74,118 @@ router.post('/', [ // validate that required fields are filled.
             }
         );
 
-        // Create new user profile
-        try {
-            const defaultProfile = {
-                user: user.id, 
-            }; 
-
-            const profile = new Profile(defaultProfile);
-            await profile.save();
-        } catch (err) {
-            console.log(err);
-        }
-    
-
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');
     }
 });
+
+// @route   GET /users/me
+// @desc    Get current user
+// @access  Private
+router.get('/me', auth, async (req, res) => {
+    try {
+        // @todo: populate user with spaces and posts. 
+        const user = await User.findOne({ _id: req.user.id }).populate('user', ['username, avatar, email']).select('-password'); 
+
+        // if no user
+        if (!user){
+            return res.status(400).json({ msg: 'This user does not exist'});
+        }
+
+        res.json(user);
+    
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   POST /users/me
+// @desc    Update a user 
+// @access  Private
+
+router.post('/me', auth , async (req, res) => {
+    const {
+        username, 
+        avatar, 
+        bio, 
+        backgroundPicture
+    } = req.body; 
+
+    // Build user object 
+    const userFields = {}; 
+    userFields.user = req.user.id; 
+    
+    if(username) userFields.username = username; 
+    if(avatar) userFields.avatar = avatar;
+    if(bio) userFields.bio = bio; 
+    if(backgroundPicture) userFields.backgroundPicture = backgroundPicture; 
+
+    try {
+        let user = await User.findOne({ user: req.user.id });
+
+        //Update the user
+         user = await User.findOneAndUpdate(
+            { _id: req.user.id }, 
+            { $set: userFields }, 
+            { new: true }
+         );
+            
+         return res.json(user);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   GET /users/:user_id
+// @desc    Get another user's account by user id
+// @access  Public
+
+router.get('/:user_id', async (req,res) => {
+    try {
+        const user = await User.findOne({ _id: req.params.user_id }).select('-password');
+
+        if(!user) res.status(404).send('User not found');
+        
+        res.json(user);
+    } catch(err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   DELETE /users
+// @desc    Delete a user account
+// @access  Private
+
+router.delete('/', auth, async (req,res) => {
+    try {
+        // Delete user
+        await User.findOneAndRemove({ _id: req.user.id });
+        res.json({ msg: 'User deleted' });
+
+    } catch (err) {
+        console.error(err.message);
+        res.json(500).send('Server Error');
+    }
+});
+
+// @ TODO: =====
+
+// @route   GET /users/:user_id/spaces
+// @desc    Get all spaces belonging to the user
+// @access  Public
+
+// @route   GET /users/:users_id/questions
+// @desc    Get all questions belonging to a user
+// @access  Public
+
+// @route   GET /users/:users_id/answers
+// @desc    Get all answers belonging to a user
+// @access  Public
+
+// =====
 
 module.exports = router;

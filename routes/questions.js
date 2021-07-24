@@ -4,13 +4,12 @@ const router = express.Router();
 const Question = require('../models/Question');
 const Answer = require('../models/Answer');
 const User = require('../models/User');
-const Profile = require('../models/User');
 
 // @route   GET /questions
 // @desc    Get all questions
 // @access  Public
 
-router.get('/', async (req, res) => {
+router.get('/', [], async (req, res) => {
     try{
         const questions = await Question.find().sort({ date: -1});
         res.json(questions);

@@ -4,7 +4,6 @@ const auth = require('../middleware/auth');
 const { check, validationResult } = require('express-validator');
 
 const Space = require('../models/Space');
-const Profile = require('../models/Profile');
 const User = require('../models/User');
 const Question = require('../models/Question');
 const Answer = require('../models/Answer');
@@ -45,7 +44,7 @@ router.post('/', [auth, [
         }
         // Create space 
         const user = await User.findById(req.user.id);
-        const userLink = `/profiles/${req.user.id}`; 
+        const userLink = `/users/${req.user.id}`; 
 
         const spaceFields = {}; 
         spaceFields.moderators = []; 
@@ -55,6 +54,7 @@ router.post('/', [auth, [
         spaceFields.members = []; 
 
         spaceFields.title = req.body.title; 
+        spaceFields.creator = req.user.id; 
         spaceFields.moderators.push(req.user.id);
         spaceFields.modNames.push(user.username); 
         spaceFields.modAvatars.push(user.avatar);
@@ -65,8 +65,12 @@ router.post('/', [auth, [
         await space.save();
 
         res.json(space);
+
+        // Add space to user
+        
+
     } catch (err) {
-        console.err(err.message);
+        console.error(err.message);
         res.json(500).send('Server error');
     }
 });
@@ -87,7 +91,7 @@ router.post('/:space_id', [auth, [
         let space = await Space.findOne({ _id: req.params.space_id }); 
         
         // @todo Check if user has access to space
-
+    
         // Check if space exists 
         if(!space){ 
             return res.status(404).send('Space does not exist'); 

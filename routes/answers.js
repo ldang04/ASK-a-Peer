@@ -3,7 +3,6 @@ const router = express.Router();
 
 const Answer = require('../models/Answer');
 const Question = require('../models/Question');
-const Profile = require('../models/Profile');
 const User = require('../models/User');
 const Space = require('../models/Space');
 
