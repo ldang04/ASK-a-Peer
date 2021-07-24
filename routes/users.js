@@ -36,6 +36,13 @@ router.post('/', [ // validate that required fields are filled.
         if(user){
             return res.status(400).json({ errors: [{ msg: 'User already exists' }]});
         }
+
+        user = await User.findOne({ username }); 
+
+        if(user){
+            return res.status(400).json({ errors: [{ msg: 'Username taken' }]});
+        }
+
         // Get users' gravatar 
         const avatar = gravatar.url(email, {
             s: '200', 

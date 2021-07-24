@@ -66,8 +66,10 @@ router.post('/', [auth, [
 
         res.json(space);
 
-        // Add space to user
-        
+        // @todo: add space to user
+        space = await Space.findOne({ title: req.body.title }); 
+        user.spaces.push(space._id); 
+        user.save();
 
     } catch (err) {
         console.error(err.message);
