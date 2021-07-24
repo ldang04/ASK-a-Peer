@@ -93,11 +93,11 @@ router.post('/', [ // validate that required fields are filled.
 router.get('/me', auth, async (req, res) => {
     try {
         // @todo: populate user with spaces and posts. 
-        const user = await User.findOne({ _id: req.user.id }).populate('user', ['username, avatar, email']).select('-password'); 
+        const user = await User.findOne({ _id: req.user.id }).select('-password'); 
 
         // if no user
         if (!user){
-            return res.status(400).json({ msg: 'This user does not exist'});
+            return res.status(400).json({ errors: [{msg: 'This user does not exist'}]});
         }
 
         res.json(user);
@@ -116,6 +116,7 @@ router.post('/me', auth , async (req, res) => {
     const {
         username, 
         avatar, 
+        pronouns,
         bio, 
         backgroundPicture
     } = req.body; 
@@ -126,11 +127,18 @@ router.post('/me', auth , async (req, res) => {
     
     if(username) userFields.username = username; 
     if(avatar) userFields.avatar = avatar;
+    if(pronouns) userFields.pronouns = pronouns; 
     if(bio) userFields.bio = bio; 
     if(backgroundPicture) userFields.backgroundPicture = backgroundPicture; 
 
     try {
-        let user = await User.findOne({ user: req.user.id });
+        let user = await User.findOne({ _id: req.user.id });
+
+        // Verify that user exists 
+        if(!user) {
+            return res.status(400).send({errors: [{ msg: 'User not found'}]});
+        }
+
 
         //Update the user
          user = await User.findOneAndUpdate(
@@ -138,6 +146,8 @@ router.post('/me', auth , async (req, res) => {
             { $set: userFields }, 
             { new: true }
          );
+
+         user = await User.findOne({ _id: req.user.id }).select('-password');
             
          return res.json(user);
     } catch (err) {
@@ -153,11 +163,11 @@ router.post('/me', auth , async (req, res) => {
 router.get('/:user_id', async (req,res) => {
     try {
         const user = await User.findOne({ _id: req.params.user_id }).select('-password');
-
-        if(!user) res.status(404).send('User not found');
-        
         res.json(user);
+        
     } catch(err) {
+        // Handle if user isn't found
+        if (err.kind == 'ObjectId') return res.status(400).json({ msg: 'User not found '})
         console.error(err.message);
         res.status(500).send('Server Error');
     }
@@ -179,20 +189,55 @@ router.delete('/', auth, async (req,res) => {
     }
 });
 
-// @ TODO: =====
-
 // @route   GET /users/:user_id/spaces
 // @desc    Get all spaces belonging to the user
 // @access  Public
+
+router.get('/:user_id/spaces', async (req, res) => {
+    try {
+        let user = await User.findOne({ _id: req.params.user_id });
+        res.json(user.spaces);
+
+    } catch (err){
+        // Handle if user isn't found
+        if (err.kind == 'ObjectId') return res.status(400).json({ msg: 'User not found '});
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
 
 // @route   GET /users/:users_id/questions
 // @desc    Get all questions belonging to a user
 // @access  Public
 
+router.get('/:user_id/questions', async (req, res) => {
+    try {
+        let user = await User.findOne({ _id: req.params.user_id });
+        res.json(user.questions);
+
+    } catch (err){
+        // Handle if user isn't found
+        if (err.kind == 'ObjectId') return res.status(400).json({ msg: 'User not found '})
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 // @route   GET /users/:users_id/answers
 // @desc    Get all answers belonging to a user
 // @access  Public
 
-// =====
+router.get('/:user_id/answers', async (req, res) => {
+    try {
+        let user = await User.findOne({ _id: req.params.user_id });
+        res.json(user.answers);
+
+    } catch (err){
+        // Handle if user isn't found
+        if (err.kind == 'ObjectId') return res.status(400).json({ msg: 'User not found '})
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
 
 module.exports = router;

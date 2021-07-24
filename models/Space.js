@@ -18,10 +18,12 @@ const SpaceSchema = new mongoose.Schema({
             ref: 'answer'
         }
     ], 
-    creator: {
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'user'
-    },
+    admins: [
+        {
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'user'
+        }
+    ],
     moderators: [
         {
             type: mongoose.Schema.Types.ObjectId, 
