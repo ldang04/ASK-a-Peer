@@ -1,3 +1,6 @@
+//=======================================================================================
+// @TODO Refactor spaces into access level files: admin, admin/moderator, regular user
+//=======================================================================================
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
@@ -23,7 +26,7 @@ router.get('/', async (req, res) => {
 
 // @route   POST /spaces
 // @desc    Create a space
-// @access  Private // !!!REMEMBER: change to admin access later on.
+// @access  Private (admin access)
 
 router.post('/', [auth, [
     check('title', 'Title is required')
@@ -37,13 +40,17 @@ router.post('/', [auth, [
 
     try {
         let space = await Space.findOne({ title: req.body.title }); 
+        const user = await User.findOne({ _id: req.user.id });
 
+        // Check if user had admin access 
+        if(!user.admin){
+            return res.status(403).send('Admin access denied.');
+        }
         // Check if space already exists
         if(space){
             return res.status(400).json({ errors: [{ msg: 'Space already exists' }]});
         }
         // Create space 
-        const user = await User.findById(req.user.id);
     
         const spaceFields = {}; 
 
@@ -59,7 +66,6 @@ router.post('/', [auth, [
 
         res.json(space);
 
-        // @todo: add space to user
         space = await Space.findOne({ title: req.body.title }); 
         user.spaces.push(space._id); 
         user.save();
@@ -71,8 +77,8 @@ router.post('/', [auth, [
 });
 
 // @route   POST /spaces/:space_id
-// @desc    Edit a space (only title for now)
-// @access  Private // !!!REMEMBER: change to admin access later on. 
+// @desc    Edit the title of a space
+// @access  Private (admin access)
 
 router.post('/:space_id', [auth, [
     check('title', 'Title is required').isString()
@@ -81,12 +87,15 @@ router.post('/:space_id', [auth, [
     if(!errors.isEmpty()){
         return res.status(400).json({ errors: errors.array() });
     }
+    console.log(req.user.id);
 
     try {
         let space = await Space.findOne({ _id: req.params.space_id }); 
-        
-        // @todo Check if user has access to space
 
+        // Check if user has admin access
+        if (!space.admins.includes(req.user.id)){
+            return res.status(403).send('Edit access forbidden');
+        }
         const newTitle = {title: req.body.title}; 
 
         space = await Space.findOneAndUpdate(
@@ -108,14 +117,30 @@ router.post('/:space_id', [auth, [
 
 });
 
+// @todo
+// @route   POST /spaces/:space_id/moderators
+// @desc    Add moderators to a space using their email
+// @access  Private (admin/moderator access)
+
+// @todo
+// @route   DELETE /spaces/:space_id/moderators
+// @desc    Delete moderators from a space using their email
+// @access  Private (admin/moderator access)
+
+
 // @route   DELETE /spaces/:space_id
 // @desc    Delete a space
-// @access  Private // !!!REMEMBER: change to admin access later on. 
+// @access  Private  (admin access)
 
 router.delete('/:space_id', auth, async (req,res) => {
     try {
         await Space.findOneAndRemove({ _id: req.params.space_id });
         const user = await User.findOne({ _id: req.user.id }); 
+
+        // Check if user has admin access 
+        if(!user.admin){
+            return res.status(403).send('Delete access denied');
+        }
 
         // Delete space from user
         const spaceIndex = user.spaces.indexOf(req.params.space_id); 
@@ -131,19 +156,20 @@ router.delete('/:space_id', auth, async (req,res) => {
     }
 });
 
-// @route   POST /spaces/:space_id
-// @desc    Edit space answers/questions
-// @access  Private // !!!REMEMBER: change to admin access later on. 
+// @todo
+// @route   DELETE /spaces/:space_id/questions/:question_id
+// @desc    delete space questions
+// @access  Private (admin/moderator access)
 
-// @route   POST /spaces/:space_id
-// @desc    Edit space moderators
-// @access  Private // !!!REMEMBER: change to admin access later on. 
+// @todo
+// @route   DELETE /spaces/:space_id/questions/:question_id/answers/:answer_id
+// @desc    delete space answers
+// @access  Private (admin/moderator access)
+
 
 // @route   POST /spaces/:space_id/questions
 // @desc    Post a question to a space 
 // @access  Private (user must be logged in)
-
-// objectives: post to space, update space, add question to user 
 
 router.post('/:space_id/questions', [auth, [
     check('title', 'Title is required').isString(), 
@@ -157,43 +183,33 @@ router.post('/:space_id/questions', [auth, [
     const { title, description } = req.body; 
 
     try {
-        console.log('req.user._id: ');
-        console.log(req.user.id);
         // Create a question
         const space = await Space.findOne({ _id: req.params.space_id });
-        const user = await User.findOne({ _id: req.user.id }); 
+        const user = await User.findOne({ _id: req.user.id });
 
         const questionFields = {}; 
         questionFields.title = title; 
         questionFields.description = description; 
         questionFields.creator = req.user.id; 
 
-        // let question = new Question(questionFields);
-        // await question.save();
+        let question = new Question(questionFields);
+        await question.save();
         
-        console.log('Before spaces stuff');
-        console.log('user id: ');
-        console.log(user);
         // Add user and quesiton to space 
         if(!space.members.includes(user._id)){
             space.members.push(user._id);
         }
-        console.log('After spaces stuff');
 
+        space.questions.push(question); 
+        await space.save();
 
-        // space.questions.push(question); 
-        // await space.save();
-
-        console.log('Before user stuff');
         // Add question and space to user
         if(!user.spaces.includes(space._id)){
             user.spaces.push(space._id);
         }
 
-        console.log('After user stuff');
-
-        // user.questions.push(question);
-        // await user.save();
+        user.questions.push(question);
+        await user.save();
 
         res.json('Question posted');
     } catch(err) {
@@ -204,14 +220,64 @@ router.post('/:space_id/questions', [auth, [
     }
 }); 
 
-// @route   POST /spaces/:space_id/answers
+
+// @route   POST /spaces/:space_id/questions/:question_id
+// @desc    edit a question title and/or description
+// @access  Private (user must be logged in)
+
+router.post('/:space_id/questions/:question_id', auth, async (req,res) => {
+    try {
+        let question = await Question.findOne({ _id: req.params.question_id });
+       
+        // Check if user has access to edit question 
+        if ( req.user.id != question.creator ){
+            res.status(403).send('Edit access unauthorized');
+        }
+
+        // Update question
+        const questionFields = {}; 
+        if(req.body.title) questionFields.title = req.body.title; 
+        if(req.body.description) questionFields.description = req.body.description; 
+        
+        question = await Question.findOneAndUpdate(
+            { _id: req.params.question_id}, 
+            { $set: questionFields }, 
+            { new: true}
+        ); 
+
+        await question.save();
+        res.json(question);
+
+    } catch(err) {
+        // handle if question or space were not found
+        if(err.kind == 'ObjectId'){
+            return res.status(400).send('Question not found');
+        }
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+// @todo
+// @route   POST /spaces/:space_id/questions/:question_id/comments
+// @desc    Post a comment to a question
+// @access  Private (user must be logged in)
+
+// @todo
+// @route   POST /spaces/:space_id/questions/:question_id/answers
 // @desc    Post an answer to a space 
 // @access  Private (user must be logged in)
 
+// @todo
+// @route   POST /spaces/:space_id/questions/:question_id/answers/:answer_id/comments
+// @desc    Post a comment to an answer
+// @access  Private (user must be logged in)
+
+// @todo
 // @route   POST /spaces/:space_id/join
 // @desc    Join a space 
 // @access  Private (user must be logged in)
 
+// @todo
 // @route   POST /spaces/:space_id/leave
 // @desc    Leave a space 
 // @access  Private (user must be logged in)
