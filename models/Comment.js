@@ -1,11 +1,7 @@
 const mongoose = require('mongoose');
 
-const AnswerSchema = mongoose.Schema({
-    questionName: {
-        type: String, 
-        required: true
-    }, 
-    description: {
+const CommentSchema = new mongoose.Schema({
+    text: {
         type: String, 
         required: true
     }, 
@@ -17,27 +13,21 @@ const AnswerSchema = mongoose.Schema({
         type: String
     },
     creatorLink: {
-        type: String, 
+        type: String
     },
     avatar: {
         type: String
     },
-    date: {
+    dateCreated: {
         type: Date, 
         default: Date.now
-    },
+    }, 
     upvotes: [
         {
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'user'
         }
-    ],
-    comments: [
-        {
-           type: mongoose.Schema.Types.ObjectId, 
-           ref: 'comment'
-        }
     ]
 });
 
-module.exports = Answer = mongoose.model('answer', AnswerSchema);
+module.exports = Comment = mongoose.model('comment', CommentSchema);

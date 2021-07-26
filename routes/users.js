@@ -24,7 +24,7 @@ router.post('/', [ // validate that required fields are filled.
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()){ // if errors are present in request
-        return res.status(400).json({ errors: errors.array()}); // status 400: bad request
+        return res.status(400).json({ errors: errors.array()}); 
     }
 
     const { username, email, password } = req.body;
