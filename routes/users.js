@@ -17,6 +17,9 @@ router.post('/', [ // validate that required fields are filled.
     check('username', 'Username is required')
     .not()
     .isEmpty(), 
+    check('fullName', 'Full name is required')
+    .not()
+    .isEmpty(),
     check('email', 'Please enter a valid email')
     .isEmail(), 
     check('password', 'Please enter a password with 6 or more characters')
@@ -162,6 +165,7 @@ router.post('/me', auth , async (req, res) => {
 
 router.get('/:user_id', async (req,res) => {
     try {
+        // @todo populate a user with spaces and posts. 
         const user = await User.findOne({ _id: req.params.user_id }).select('-password');
         res.json(user);
         
@@ -174,7 +178,7 @@ router.get('/:user_id', async (req,res) => {
 });
 
 // @route   DELETE /users
-// @desc    Delete a user account
+// @desc    Delete a user account // @todo should their spaces/questions/answers/comments be deleted as well?
 // @access  Private
 
 router.delete('/', auth, async (req,res) => {
@@ -195,6 +199,7 @@ router.delete('/', auth, async (req,res) => {
 
 router.get('/:user_id/spaces', async (req, res) => {
     try {
+        // @todo populate spaces with info 
         let user = await User.findOne({ _id: req.params.user_id });
         res.json(user.spaces);
 
@@ -212,6 +217,7 @@ router.get('/:user_id/spaces', async (req, res) => {
 
 router.get('/:user_id/questions', async (req, res) => {
     try {
+        // @todo populate questions with info 
         let user = await User.findOne({ _id: req.params.user_id });
         res.json(user.questions);
 
@@ -229,6 +235,7 @@ router.get('/:user_id/questions', async (req, res) => {
 
 router.get('/:user_id/answers', async (req, res) => {
     try {
+        // @todo populate answers with info 
         let user = await User.findOne({ _id: req.params.user_id });
         res.json(user.answers);
 

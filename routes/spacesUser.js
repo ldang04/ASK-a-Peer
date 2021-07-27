@@ -11,18 +11,7 @@ const Comment = require('../models/Comment');
 
 // Public Access =======================================================================================
 
-// @route   GET /spaces
-// @desc    Get all spaces
-// @access  Public
-router.get('/', async (req, res) => {
-    try {
-        const spaces = await Space.find(); 
-        res.json(spaces);
-    } catch (err){
-        console.error(err.message);
-        res.json(500).send('Server error');
-    }
-});
+
 
 // Private Access =======================================================================================
 
@@ -130,16 +119,13 @@ router.post('/:space_id/questions/:question_id/comments', [auth, [
     }
     try {
         const question = await Question.findOne({ _id: req.params.question_id });
-        const user = await User.findOne({ _id: req.user.id });
 
-        const commentFields = {};
-        commentFields.text = req.body.text; 
-        commentFields.creator = req.user.id; 
-        commentFields.creatorName = user.username; 
-        commentFields.creatorLink = `/users/${req.user.id}`;
-        commentFields.avatar = user.avatar;
+        const commentText = {
+            text: req.body.text, 
+            creator: req.user.id
+        };
 
-        let comment = new Comment(commentFields);
+        let comment = new Comment(commentText);
         await comment.save();
         
         question.comments.push(comment);
@@ -159,6 +145,55 @@ router.post('/:space_id/questions/:question_id/comments', [auth, [
 // @route   DELETE /spaces/:space_id/questions/:question_id/comments/:comment_id
 // @desc    Delete a comment in a question
 // @access  Private (user must be logged in)
+
+router.delete('/:space_id/questions/:question_id/comments/:comment_id', auth, async(req,res) => {
+    try {
+        const user = await User.findOne({ _id: req.user.id });
+        const space = await Space.findOne({ _id: req.params.space_id });
+        const question = await Question.findOne({ _id: req.params.question_id });
+        let comment = await Comment.findOne({ _id: req.params.comment_id });
+
+        if(!space){
+            return res.status(400).send('Space not found');
+        }
+
+        if(!question) {
+            return res.status(400).send('Question not found');
+        }
+        
+        if(!comment){
+            return res.status(400).send('Comment not found');
+        }
+        
+        if(!space.questions.includes(question._id)){
+            return res.status(400).send('This question does not belong to the given space. Check browser URL.');
+        }
+
+        if(!question.comments.includes(comment._id)){
+            return res.status(400).send('This comment does not belong to the given question. Check browser URL.');
+        }
+
+        if(req.user.id == comment.creator || space.moderators.includes(req.user.id) || user.admin){
+            const commentIndex = question.comments.indexOf(req.params.comment_id);
+            question.comments.splice(commentIndex, 1);
+            
+            await Comment.findOneAndRemove({ _id: req.params.comment_id });
+            await question.save();
+    
+            res.json('Comment deleted');
+        } else {
+            res.status(400).send('Comment delete access unauthorized');
+        }
+        
+    } catch (err) {
+        if(err.kind == "ObjectId"){
+            return res.status(400).send({ error: "Comment not found"});
+        }
+
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
 
 // @todo
 // @route   POST /spaces/:space_id/questions/:question_id/answers
@@ -215,13 +250,6 @@ router.post('/:space_id/leave', auth, async (req, res) => {
         const user = await User.findOne({ _id: req.user.id }); 
         const space = await Space.findOne({ _id: req.params.space_id});
         
-        console.log('====================');
-        console.log('BEFORE');
-        console.log('user: ' + req.user.id);
-        console.log('space: ' + req.params_id);
-        console.log(user);
-        console.log(space);
-        console.log('====================');
         // Check if space is part of user spaces
         if(!user.spaces.includes(req.params.space_id)) return res.status(400).send('User not member of space');
 

@@ -5,8 +5,6 @@ const { check, validationResult } = require('express-validator');
 
 const Space = require('../models/Space');
 const User = require('../models/User');
-const Question = require('../models/Question');
-const Answer = require('../models/Answer');
 
 // @route   POST /spaces
 // @desc    Create a space
@@ -28,7 +26,7 @@ router.post('/', [auth, [
 
         // Check if user had admin access 
         if(!user.admin){
-            return res.status(403).send('Admin access denied.');
+            return res.status(403).send('Admin access required to create a space.');
         }
         // Check if space already exists
         if(space){
@@ -71,14 +69,13 @@ router.post('/:space_id', [auth, [
     if(!errors.isEmpty()){
         return res.status(400).json({ errors: errors.array() });
     }
-    console.log(req.user.id);
 
     try {
         let space = await Space.findOne({ _id: req.params.space_id }); 
 
         // Check if user has admin access
         if (!space.admins.includes(req.user.id)){
-            return res.status(403).send('Edit access forbidden');
+            return res.status(403).send('Admin access required to edit space');
         }
         const newTitle = {title: req.body.title}; 
 
@@ -107,23 +104,32 @@ router.post('/:space_id', [auth, [
 
 router.delete('/:space_id', auth, async (req,res) => {
     try {
-        await Space.findOneAndRemove({ _id: req.params.space_id });
         const user = await User.findOne({ _id: req.user.id }); 
 
         // Check if user has admin access 
         if(!user.admin){
-            return res.status(403).send({error: 'Delete access denied'});
+            return res.status(403).send({error: 'Admin access required to delete space'});
         }
+        await Space.findOneAndRemove({ _id: req.params.space_id });
 
         // Delete space from user
         const spaceIndex = user.spaces.indexOf(req.params.space_id); 
         user.spaces.splice(spaceIndex, 1);
 
+        // @todo Delete questions that belong to the space
+        // @todo Delete (question) comments that belong to the space 
+        // @todo Delete answers that belong to the space 
+        // @todo Delete (answer) comments that belong to the space 
+    
         // Save changes 
         await user.save();
 
         res.json('Space deleted');
     } catch (err) {
+        // Handle if space not found 
+        if(err.kind == "ObjectId"){
+            res.status(400).send('Space not found');
+        }
         console.error(err.message);
         res.json(500).send('Server Error');
     }

@@ -8,15 +8,6 @@ const CommentSchema = new mongoose.Schema({
     creator: {
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'user'
-    }, 
-    creatorName: {
-        type: String
-    },
-    creatorLink: {
-        type: String
-    },
-    avatar: {
-        type: String
     },
     dateCreated: {
         type: Date, 

@@ -13,15 +13,6 @@ const AnswerSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'user'
     }, 
-    creatorName: {
-        type: String
-    },
-    creatorLink: {
-        type: String, 
-    },
-    avatar: {
-        type: String
-    },
     date: {
         type: Date, 
         default: Date.now

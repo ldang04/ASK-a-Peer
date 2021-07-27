@@ -10,12 +10,12 @@ const Answer = require('../models/Answer');
 
 // @todo
 // @route   POST /spaces/:space_id/moderators
-// @desc    Add moderators to a space using their email
+// @desc    Add moderators to a space 
 // @access  Private (admin/moderator access)
 
 // @todo
 // @route   DELETE /spaces/:space_id/moderators
-// @desc    Delete moderators from a space using their email
+// @desc    Delete moderators from a space 
 // @access  Private (admin/moderator access)
 
 // @todo

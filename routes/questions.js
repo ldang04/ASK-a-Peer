@@ -13,6 +13,7 @@ router.get('/', [], async (req, res) => {
     try{
         const questions = await Question.find().sort({ date: -1});
         res.json(questions);
+
     } catch (err) {
         console.error(err.message);
         res.json(500).send('Server Error');

@@ -15,6 +15,7 @@ app.get('/', (req, res) => res.send('And so it begins...'));
 app.use('/auth', require('./routes/auth'));
 app.use('/questions', require('./routes/questions'));
 app.use('/answers', require('./routes/answers'));
+app.use('/spaces', require('./routes/spacesGeneral'));
 app.use('/spaces', require('./routes/spacesAdmin'));
 app.use('/spaces', require('./routes/spacesMod'));
 app.use('/spaces', require('./routes/spacesUser'));

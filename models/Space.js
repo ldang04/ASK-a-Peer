@@ -29,22 +29,7 @@ const SpaceSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'user'
         }
-    ], 
-    modNames: [
-        {
-            type: String
-        }
     ],
-    modAvatars: [
-        {
-            type: String
-        }
-    ], 
-    modLinks : [
-        {
-            type: String
-        }
-    ], 
     members: [
         {
             type: mongoose.Schema.Types.ObjectId, 
