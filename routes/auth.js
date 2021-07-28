@@ -42,14 +42,14 @@ router.post('/', [ // validate that required fields are filled.
 
         // See if user exists
         if(!user){
-            return res.status(400).json({ errors: [{ msg: 'Invalid credentials' }]});
+            return res.status(400).json({ error: 'Invalid credential'});
         }
 
         // See if password matches
         const isMatch = await bcrypt.compare(password, user.password);
 
         if(!isMatch){
-            return res.status(400).json({ errors: [{ msg: 'Invalid credentials' }]});
+            return res.status(400).json({ errors: 'Invalid credential'});
         }
 
         // Return jsonwebtoken 

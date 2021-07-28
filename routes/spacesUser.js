@@ -9,19 +9,17 @@ const Question = require('../models/Question');
 const Answer = require('../models/Answer');
 const Comment = require('../models/Comment');
 
-// Public Access =======================================================================================
-
-
-
-// Private Access =======================================================================================
-
 // @route   POST /spaces/:space_id/questions
 // @desc    Post a question to a space 
 // @access  Private (user must be logged in)
 
 router.post('/:space_id/questions', [auth, [
-    check('title', 'Title is required').isString(), 
-    check('description', 'Description is required').isString()
+    check('title', 'Title is required')
+    .isString()
+    .isLength({ min: 1}), 
+    check('description', 'Description is required')
+    .isString()
+    .isLength({ min: 1})
 ]], async(req, res) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()){
@@ -131,7 +129,7 @@ router.post('/:space_id/questions/:question_id/comments', [auth, [
         question.comments.push(comment);
         await question.save()
 
-        res.json('Comment posted');
+        res.json(question);
     } catch(err){
         if (err.kind == "ObjectId"){
             return res.status(400).send({error: 'Question not found'})

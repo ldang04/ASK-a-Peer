@@ -5,6 +5,9 @@ const { check, validationResult } = require('express-validator');
 
 const Space = require('../models/Space');
 const User = require('../models/User');
+const Question = require('../models/Question');
+const Answer = require('../models/Answer');
+const Comment = require('../models/Comment');
 
 // @route   POST /spaces
 // @desc    Create a space
@@ -26,7 +29,7 @@ router.post('/', [auth, [
 
         // Check if user had admin access 
         if(!user.admin){
-            return res.status(403).send('Admin access required to create a space.');
+            return res.status(400).send({error: 'Admin access required to create a space.'});
         }
         // Check if space already exists
         if(space){
@@ -75,7 +78,7 @@ router.post('/:space_id', [auth, [
 
         // Check if user has admin access
         if (!space.admins.includes(req.user.id)){
-            return res.status(403).send('Admin access required to edit space');
+            return res.status(400).send({error: 'Admin access required to edit space'});
         }
         const newTitle = {title: req.body.title}; 
 
@@ -98,6 +101,7 @@ router.post('/:space_id', [auth, [
 
 });
 
+// @todo: debug this function -.-'
 // @route   DELETE /spaces/:space_id
 // @desc    Delete a space
 // @access  Private  (admin access)
@@ -105,25 +109,68 @@ router.post('/:space_id', [auth, [
 router.delete('/:space_id', auth, async (req,res) => {
     try {
         const user = await User.findOne({ _id: req.user.id }); 
-
+       
         // Check if user has admin access 
         if(!user.admin){
-            return res.status(403).send({error: 'Admin access required to delete space'});
+            return res.status(400).send({error: 'Admin access required to delete space'});
         }
-        await Space.findOneAndRemove({ _id: req.params.space_id });
+
+        const space = await Space.findOne({ _id: req.params.space_id});
+
+        if (!space){
+            return res.status(400).send({ error: 'Space not found' });
+        }
 
         // Delete space from user
-        const spaceIndex = user.spaces.indexOf(req.params.space_id); 
-        user.spaces.splice(spaceIndex, 1);
+        if (user.spaces.includes(space._id)){
+            const spaceIndex = user.spaces.indexOf(space._id); 
+            user.spaces.splice(spaceIndex, 1);
+        }
+           
+        // Delete questions that belong to the space
 
-        // @todo Delete questions that belong to the space
-        // @todo Delete (question) comments that belong to the space 
-        // @todo Delete answers that belong to the space 
-        // @todo Delete (answer) comments that belong to the space 
+        if (space.questions.length > 0 ){
+            space.questions.forEach(async (question) => {
+                await Question.findOneAndRemove({ _id: question._id });
+                
+                // Delete comments 
+                if (question.comments > 0){
+                    question.comments.forEach(async (comment) => {
+                        await Comment.findOneAndRemove({_id: comment._id});
+                    });
+                }
+
+                // Delete question from user 
+                let questionIndex = user.questions.indexOf(question._id);
+                user.questions.splice(questionIndex, 1);
+            });
+        }
     
-        // Save changes 
-        await user.save();
 
+        // Delete answers that belong to the space 
+        
+        if(space.answers.length > 0){
+            space.answers.forEach(async (answer) => {
+                await Answer.findOneAndRemove({ _id: answer._id });
+
+                // Delete comments 
+                if (answer.comments > 0){
+                    answer.comments.forEach(async (comment) => {
+                        await Comment.findOneAndRemove({ _id: comment._id});
+                    });
+                }
+
+                // Delete answer from user
+                let answerIndex = user.answers.indexOf(answer._id);
+                user.answers.splice(answerIndex, 1);
+            });
+        }
+    
+    
+       // Delete space
+        await Space.findOneAndRemove({ _id: req.params.space_id });
+        // Save changes
+        await user.save();
         res.json('Space deleted');
     } catch (err) {
         // Handle if space not found 

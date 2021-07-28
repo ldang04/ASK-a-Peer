@@ -30,7 +30,7 @@ router.post('/', [ // validate that required fields are filled.
         return res.status(400).json({ errors: errors.array()}); 
     }
 
-    const { username, email, password } = req.body;
+    const { username, fullName, email, password } = req.body;
     
     try {
         // See if user exists 
@@ -55,6 +55,7 @@ router.post('/', [ // validate that required fields are filled.
 
         user = new User({
             username, 
+            fullName,
             email, 
             avatar, 
             password
@@ -85,6 +86,7 @@ router.post('/', [ // validate that required fields are filled.
         );
 
     } catch (err) {
+        console.error('coming from catch');
         console.error(err.message);
         res.status(500).send('Server error');
     }
@@ -95,15 +97,19 @@ router.post('/', [ // validate that required fields are filled.
 // @access  Private
 router.get('/me', auth, async (req, res) => {
     try {
-        // @todo: populate user with spaces and posts. 
-        const user = await User.findOne({ _id: req.user.id }).select('-password'); 
-
-        // if no user
-        if (!user){
-            return res.status(400).json({ errors: [{msg: 'This user does not exist'}]});
-        }
-
-        res.json(user);
+        // @todo populate questions and answers with user comments and upvotes. 
+        await User.findOne({ _id: req.user.id })
+        .populate('spaces', ['title', 'backgroundPicture'])
+        .populate('questions')
+        .populate('answers')
+        .exec()
+        .then( user => {
+            // if no user
+            if (!user){
+                return res.status(400).json({ errors: [{msg: 'This user does not exist'}]});
+            }
+            res.json(user);
+        });
     
     } catch (err) {
         console.error(err.message);
@@ -112,7 +118,7 @@ router.get('/me', auth, async (req, res) => {
 });
 
 // @route   POST /users/me
-// @desc    Update a user 
+// @desc    Update user info (not password)
 // @access  Private
 
 router.post('/me', auth , async (req, res) => {
@@ -159,15 +165,30 @@ router.post('/me', auth , async (req, res) => {
     }
 });
 
+// @todo 
+// @route   POST /users/me/password
+// @desc    Forgot password/change user password using twilio (via username)
+// @access  Private
+
 // @route   GET /users/:user_id
 // @desc    Get another user's account by user id
 // @access  Public
 
 router.get('/:user_id', async (req,res) => {
     try {
-        // @todo populate a user with spaces and posts. 
-        const user = await User.findOne({ _id: req.params.user_id }).select('-password');
-        res.json(user);
+        // @todo populate questions and answers with user comments and upvotes. 
+        await User.findOne({ _id: req.params.user_id })
+        .select(['-password', '-admin'])
+        .populate('spaces', ['title', 'backgroundPicture'])
+        .populate('questions')
+        .populate('answers')
+        .exec()
+        .then(user => {
+            if (!user){
+                return res.status(400).send({error: 'User not found'})
+            }
+            res.json(user);
+        });
         
     } catch(err) {
         // Handle if user isn't found
@@ -190,60 +211,6 @@ router.delete('/', auth, async (req,res) => {
     } catch (err) {
         console.error(err.message);
         res.json(500).send('Server Error');
-    }
-});
-
-// @route   GET /users/:user_id/spaces
-// @desc    Get all spaces belonging to the user
-// @access  Public
-
-router.get('/:user_id/spaces', async (req, res) => {
-    try {
-        // @todo populate spaces with info 
-        let user = await User.findOne({ _id: req.params.user_id });
-        res.json(user.spaces);
-
-    } catch (err){
-        // Handle if user isn't found
-        if (err.kind == 'ObjectId') return res.status(400).json({ msg: 'User not found '});
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
-});
-
-// @route   GET /users/:users_id/questions
-// @desc    Get all questions belonging to a user
-// @access  Public
-
-router.get('/:user_id/questions', async (req, res) => {
-    try {
-        // @todo populate questions with info 
-        let user = await User.findOne({ _id: req.params.user_id });
-        res.json(user.questions);
-
-    } catch (err){
-        // Handle if user isn't found
-        if (err.kind == 'ObjectId') return res.status(400).json({ msg: 'User not found '})
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
-});
-
-// @route   GET /users/:users_id/answers
-// @desc    Get all answers belonging to a user
-// @access  Public
-
-router.get('/:user_id/answers', async (req, res) => {
-    try {
-        // @todo populate answers with info 
-        let user = await User.findOne({ _id: req.params.user_id });
-        res.json(user.answers);
-
-    } catch (err){
-        // Handle if user isn't found
-        if (err.kind == 'ObjectId') return res.status(400).json({ msg: 'User not found '})
-        console.error(err.message);
-        res.status(500).send('Server Error');
     }
 });
 
