@@ -50,11 +50,6 @@ router.post('/', [auth, [
         await space.save();
 
         res.json(space);
-
-        space = await Space.findOne({ title: req.body.title }); 
-        user.spaces.push(space._id); 
-        user.save();
-
     } catch (err) {
         console.error(err.message);
         res.json(500).send('Server error');
@@ -74,11 +69,16 @@ router.post('/:space_id', [auth, [
     }
 
     try {
-        let space = await Space.findOne({ _id: req.params.space_id }); 
+        const user = await User.findOne({ _id: req.user.id });
 
         // Check if user has admin access
-        if (!space.admins.includes(req.user.id)){
+        if (!user.admin){
             return res.status(400).send({error: 'Admin access required to edit space'});
+        }
+        let space = await Space.findOne({ _id: req.params.space_id }); 
+        
+        if(!space){
+            return res.status(400).send({error: 'Space not found'});
         }
         const newTitle = {title: req.body.title}; 
 
@@ -120,57 +120,45 @@ router.delete('/:space_id', auth, async (req,res) => {
         if (!space){
             return res.status(400).send({ error: 'Space not found' });
         }
-
-        // Delete space from user
-        if (user.spaces.includes(space._id)){
-            const spaceIndex = user.spaces.indexOf(space._id); 
-            user.spaces.splice(spaceIndex, 1);
-        }
-           
-        // Delete questions that belong to the space
-
-        if (space.questions.length > 0 ){
-            space.questions.forEach(async (question) => {
-                await Question.findOneAndRemove({ _id: question._id });
-                
-                // Delete comments 
-                if (question.comments > 0){
-                    question.comments.forEach(async (comment) => {
-                        await Comment.findOneAndRemove({_id: comment._id});
-                    });
-                }
-
-                // Delete question from user 
-                let questionIndex = user.questions.indexOf(question._id);
-                user.questions.splice(questionIndex, 1);
+        
+        // Delete comments that belong to space questions
+        if(space.questions.length > 0){
+            space.questions.forEach(async (id) => {
+                let question = await Question.findOne({_id: id});
+            
+                question.comments.forEach(async (comment) => {
+                    await Comment.findOneAndRemove({ _id: comment});
+                });
             });
         }
-    
 
-        // Delete answers that belong to the space 
+        // Delete space questions 
+        if(space.questions.length > 0){
+            space.questions.forEach(async (question) => {
+                await Question.findOneAndRemove({ _id: question});
+            });
+        }
+
+        // Delete comments from answers 
+        if(space.answers.length > 0){
+            space.answers.forEach(async (id) => {
+                let answer = await Answer.findOne({_id: id});
+            
+                answer.comments.forEach(async (comment) => {
+                    await Comment.findOneAndRemove({ _id: comment});
+                });
+            });
+        }
         
+        // Delete space answers
         if(space.answers.length > 0){
             space.answers.forEach(async (answer) => {
-                await Answer.findOneAndRemove({ _id: answer._id });
-
-                // Delete comments 
-                if (answer.comments > 0){
-                    answer.comments.forEach(async (comment) => {
-                        await Comment.findOneAndRemove({ _id: comment._id});
-                    });
-                }
-
-                // Delete answer from user
-                let answerIndex = user.answers.indexOf(answer._id);
-                user.answers.splice(answerIndex, 1);
+                await Answer.findOneAndRemove({ _id: answer});
             });
         }
-    
-    
+
        // Delete space
         await Space.findOneAndRemove({ _id: req.params.space_id });
-        // Save changes
-        await user.save();
         res.json('Space deleted');
     } catch (err) {
         // Handle if space not found 

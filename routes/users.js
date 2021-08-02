@@ -8,6 +8,10 @@ const { check, validationResult } = require('express-validator');
 const auth = require('../middleware/auth');
 
 const User = require('../models/User');
+const Question = require('../models/Question'); 
+const Answer = require('../models/Answer')
+const Comment = require('../models/Comment');
+const Space = require('../models/Space');
 
 // @route   POST /users
 // @desc    Register a user 
@@ -97,20 +101,86 @@ router.post('/', [ // validate that required fields are filled.
 // @access  Private
 router.get('/me', auth, async (req, res) => {
     try {
-        // @todo populate questions and answers with user comments and upvotes. 
-        await User.findOne({ _id: req.user.id })
-        .populate('spaces', ['title', 'backgroundPicture'])
-        .populate('questions')
-        .populate('answers')
-        .exec()
-        .then( user => {
-            // if no user
-            if (!user){
-                return res.status(400).json({ errors: [{msg: 'This user does not exist'}]});
+        const user = await User.findOne({ _id: req.user.id }).select('-password');
+
+        // Build response object 
+        const response = {}; 
+        response._id = user._id; 
+        response.username = user.username; 
+        response.fullName = user.fullName; 
+        response.email = user.email; 
+        response.avatar = user.avatar; 
+        response.pronouns = user.pronouns; 
+        response.admin = user.admin; 
+        response.bio = user.bio; 
+        response.backgroundPicture = user.backgroundPicture;
+        
+        // Spaces 
+        const spaces = await Space.find({ members: user._id }).select(['title', 'backgroundPicture']);
+
+        if(spaces){
+            response.spaces = spaces; 
+        }
+
+        // Questions 
+       await Question.find({ creator: { _id: user._id }})
+        .populate(
+            [
+                {
+                path: 'comments', 
+                model: Comment, 
+                populate: {
+                    path: 'creator', 
+                    model: User, 
+                    select: ['username', 'avatar']
+                }
+            }, 
+            {
+                path: 'answers', 
+                model: Answer, 
+                populate: [
+                    {
+                        path: 'creator', 
+                        model: User,
+                        select: ['username', 'avatar']
+                    }, 
+                    {
+                        path: 'comments',
+                        model: Comment, 
+                        populate: {
+                            path: 'creator', 
+                            model: User, 
+                            select: ['username', 'avatar']
+                        }
+                    }
+                ]
             }
-            res.json(user);
-        });
+        ]
+    )
+    .exec()
+    .then( questions => {
+        response.questions = questions; 
+    }); 
+        // Answers
+    await Answer.find({ creator: {_id: user._id }})
+    .populate(
+        {
+            path: 'comments', 
+            model: Comment, 
+            populate: {
+                path: 'creator', 
+                model: User, 
+                select: ['username', 'avatar']
+            }
+        }
+    )
+    .exec()
+    .then(answers => {
+        response.answers = answers;
+    });
     
+    res.json(response);
+
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
@@ -143,13 +213,7 @@ router.post('/me', auth , async (req, res) => {
     try {
         let user = await User.findOne({ _id: req.user.id });
 
-        // Verify that user exists 
-        if(!user) {
-            return res.status(400).send({errors: [{ msg: 'User not found'}]});
-        }
-
-
-        //Update the user
+        // Update the user
          user = await User.findOneAndUpdate(
             { _id: req.user.id }, 
             { $set: userFields }, 
@@ -177,22 +241,92 @@ router.post('/me', auth , async (req, res) => {
 router.get('/:user_id', async (req,res) => {
     try {
         // @todo populate questions and answers with user comments and upvotes. 
-        await User.findOne({ _id: req.params.user_id })
-        .select(['-password', '-admin'])
-        .populate('spaces', ['title', 'backgroundPicture'])
-        .populate('questions')
-        .populate('answers')
-        .exec()
-        .then(user => {
-            if (!user){
-                return res.status(400).send({error: 'User not found'})
-            }
-            res.json(user);
-        });
+        const user = await User.findOne({ _id: req.params.user_id }).select('-password');
         
+        if(!user){
+            return res.status(400).send({ error: 'User not found'});
+        }
+
+        // Build response object 
+        const response = {}; 
+        response._id = user._id; 
+        response.username = user.username; 
+        response.fullName = user.fullName; 
+        response.email = user.email; 
+        response.avatar = user.avatar; 
+        response.pronouns = user.pronouns; 
+        response.admin = user.admin; 
+        response.bio = user.bio; 
+        response.backgroundPicture = user.backgroundPicture;
+        
+        // Spaces 
+        const spaces = await Space.find({ members: user._id }).select(['title', 'backgroundPicture']);
+
+        if(spaces){
+            response.spaces = spaces; 
+        }
+
+        // Questions 
+       await Question.find({ creator: { _id: user._id }})
+        .populate(
+            [
+                {
+                path: 'comments', 
+                model: Comment, 
+                populate: {
+                    path: 'creator', 
+                    model: User, 
+                    select: ['username', 'avatar']
+                }
+            }, 
+            {
+                path: 'answers', 
+                model: Answer, 
+                populate: [
+                    {
+                        path: 'creator', 
+                        model: User,
+                        select: ['username', 'avatar']
+                    }, 
+                    {
+                        path: 'comments',
+                        model: Comment, 
+                        populate: {
+                            path: 'creator', 
+                            model: User, 
+                            select: ['username', 'avatar']
+                        }
+                    }
+                ]
+            }
+        ]
+    )
+    .exec()
+    .then( questions => {
+        response.questions = questions; 
+    }); 
+        // Answers
+    await Answer.find({ creator: {_id: user._id }})
+    .populate(
+        {
+            path: 'comments', 
+            model: Comment, 
+            populate: {
+                path: 'creator', 
+                model: User, 
+                select: ['username', 'avatar']
+            }
+        }
+    )
+    .exec()
+    .then(answers => {
+        response.answers = answers;
+    });
+
+    res.json(response);
     } catch(err) {
         // Handle if user isn't found
-        if (err.kind == 'ObjectId') return res.status(400).json({ msg: 'User not found '})
+        if (err.kind == 'ObjectId') return res.status(400).json({ error: 'User not found '})
         console.error(err.message);
         res.status(500).send('Server Error');
     }
@@ -206,6 +340,8 @@ router.delete('/', auth, async (req,res) => {
     try {
         // Delete user
         await User.findOneAndRemove({ _id: req.user.id });
+
+        // @todo make json webtoken invalid
         res.json({ msg: 'User deleted' });
 
     } catch (err) {

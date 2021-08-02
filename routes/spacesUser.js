@@ -15,11 +15,11 @@ const Comment = require('../models/Comment');
 
 router.post('/:space_id/questions', [auth, [
     check('title', 'Title is required')
-    .isString()
-    .isLength({ min: 1}), 
+    .not()
+    .isEmpty(), 
     check('description', 'Description is required')
-    .isString()
-    .isLength({ min: 1})
+    .not()
+    .isEmpty()
 ]], async(req, res) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()){
@@ -33,6 +33,9 @@ router.post('/:space_id/questions', [auth, [
         const space = await Space.findOne({ _id: req.params.space_id });
         const user = await User.findOne({ _id: req.user.id });
 
+        if(!space){
+            return res.status(400).send({ error: 'Space not found'});
+        }
         const questionFields = {}; 
         questionFields.title = title; 
         questionFields.description = description; 
