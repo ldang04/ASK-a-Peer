@@ -49,7 +49,6 @@ router.get('/', [], async (req, res) => {
     }
 });
 
-// @todo 
 // @route   GET /questions/:question_id
 // @desc    Get question by question id 
 // @access  Public
@@ -170,4 +169,15 @@ router.delete('/:question_id/comments/:comment_id', auth, async(req,res) => {
         res.status(500).send('Server Error');
     }
 });
+
+// @todo
+// @route   POST /questions/:question_id/answers
+// @desc    Post an answer to a question
+// @access  Private (user must be logged in)
+
+// @todo
+// @route   POST /questions/:question_id/answers/:answer_id
+// @desc    Edit an answer to a question
+// @access  Private (user must be logged in)
+
 module.exports = router;

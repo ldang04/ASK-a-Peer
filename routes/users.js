@@ -60,6 +60,8 @@ router.post('/', [ // validate that required fields are filled.
 
         user.password = await bcrypt.hash(password, salt);
 
+        // @todo Create user email validation feature via twilio
+
         await user.save();
 
         // Return jsonwebtoken 
@@ -226,7 +228,6 @@ router.post('/me', auth , async (req, res) => {
 
 router.get('/:user_id', async (req,res) => {
     try {
-        // @todo populate questions and answers with user comments and upvotes. 
         const user = await User.findOne({ _id: req.params.user_id }).select('-password');
         
         if(!user){
@@ -318,7 +319,7 @@ router.get('/:user_id', async (req,res) => {
 });
 
 // @route   DELETE /users
-// @desc    Delete a user account // @todo should their spaces/questions/answers/comments be deleted as well?
+// @desc    Delete a user account 
 // @access  Private
 
 router.delete('/', auth, async (req,res) => {

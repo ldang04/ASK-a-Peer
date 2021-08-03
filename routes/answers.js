@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-// @todo test
+// @todo test route
 // @route   GET /answers/:answer_id
 // @desc    Get answer by answer id 
 // @access  Public
@@ -58,4 +58,25 @@ router.get('/:answer_id', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
+
+// @todo
+// @route   POST /answers/:answer_id/comments
+// @desc    Post a comment to an answer
+// @access  Private (user must be logged in)
+
+// @todo
+// @route   DELETE /answers/:answer_id/comments/:comment_id
+// @desc    Delete a comment in an answer
+// @access  Private (user must be logged in)
+
+// @todo
+// @route   POST /answers/:answer_id/vote
+// @desc    Upvote/downvote an answer
+// @access  Private (user must be logged in)
+
+// @todo
+// @route   POST /answers/:answer_id/comments/:comment_id/vote
+// @desc    Upvote/downvote an answer comment
+// @access  Private (user must be logged in)
+
 module.exports = router;

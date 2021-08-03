@@ -98,21 +98,9 @@ router.post('/:space_id/questions/:question_id', auth, async (req,res) => {
     }
 });
 
-
-
 // @todo
 // @route   POST /spaces/:space_id/questions/:question_id/answers
 // @desc    Post an answer to a space 
-// @access  Private (user must be logged in)
-
-// @todo
-// @route   POST /spaces/:space_id/questions/:question_id/answers/:answer_id/comments
-// @desc    Post a comment to an answer
-// @access  Private (user must be logged in)
-
-// @todo
-// @route   DELETE /spaces/:space_id/questions/:question_id/answers/:answer_id/comments/:comment_id
-// @desc    Delete a comment in an answer
 // @access  Private (user must be logged in)
 
 // @route   POST /spaces/:space_id/join

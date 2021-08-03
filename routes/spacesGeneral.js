@@ -25,14 +25,12 @@ router.get('/', async (req, res) => {
     }
 });
 
-// @todo 
 // @route   GET /spaces/:space_id
 // @desc    Get a space by space id
 // @access  Public
 
 router.get('/:space_id', async (req,res) => {
     try {
-        // @todo deep populate questions and answers with creator names and comments
         await Space.findOne({ _id: req.params.space_id })
         .populate(
             [

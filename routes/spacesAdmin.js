@@ -111,6 +111,7 @@ router.delete('/:space_id', auth, async (req,res) => {
 
         // Check if user has admin access 
         if(user.admin || space.admins.includes(user._id)){
+            
             // Delete comments that belong to space questions
             if(space.questions.length > 0){
                 space.questions.forEach(async (id) => {
@@ -122,28 +123,14 @@ router.delete('/:space_id', auth, async (req,res) => {
                 });
             }
 
+            // @todo Delete answer comments that belong to answers in space questions 
+            
+            // @todo Delete answers that belong to space questions
+
             // Delete space questions 
             if(space.questions.length > 0){
                 space.questions.forEach(async (question) => {
                     await Question.findOneAndRemove({ _id: question});
-                });
-            }
-
-            // Delete comments from answers 
-            if(space.answers.length > 0){
-                space.answers.forEach(async (id) => {
-                    let answer = await Answer.findOne({_id: id});
-                
-                    answer.comments.forEach(async (comment) => {
-                        await Comment.findOneAndRemove({ _id: comment});
-                    });
-                });
-            }
-            
-            // Delete space answers
-            if(space.answers.length > 0){
-                space.answers.forEach(async (answer) => {
-                    await Answer.findOneAndRemove({ _id: answer});
                 });
             }
 
@@ -153,7 +140,7 @@ router.delete('/:space_id', auth, async (req,res) => {
         } else {
             return res.status(400).send({error: 'Admin access required to delete space'});
         }
-        
+
     } catch (err) {
         // Handle if space not found 
         if(err.kind == "ObjectId"){
