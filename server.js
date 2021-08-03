@@ -23,4 +23,4 @@ app.use('/users', require('./routes/users'));
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => console.log(`The ASC-a-Peer server is running on port ${PORT} ʕノ•ᴥ•ʔノ ︵ ┻━┻`));
+app.listen(PORT, () => console.log(`The ASC-a-Peer server is running on port ${PORT} (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧`));

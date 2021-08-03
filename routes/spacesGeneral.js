@@ -47,7 +47,7 @@ router.get('/:space_id', async (req,res) => {
                                 {
                                     path: 'creator', 
                                     model: User, 
-                                    select: ['username', 'avatar']
+                                    select: ['fullName', 'avatar']
                                 }, 
                                 {
                                     path: 'comments', 
@@ -55,7 +55,7 @@ router.get('/:space_id', async (req,res) => {
                                     populate: {
                                         path: 'creator', 
                                         model: User, 
-                                        select: ['username', 'avatar']
+                                        select: ['fullName', 'avatar']
                                     }
                                 }
                             ]
@@ -66,16 +66,16 @@ router.get('/:space_id', async (req,res) => {
                             populate: {
                                 path: 'creator', 
                                 model: User, 
-                                select: ['username', 'avatar']
+                                select: ['fullName', 'avatar']
                             }
                         }
                     ]
                 }
             ]
         )
-        .populate('admins', ['username', 'fullName', 'email', 'avatar', 'pronouns'])
-        .populate('moderators', ['username', 'fullName', 'email', 'avatar', 'pronouns'])
-        .populate('members', ['username', 'fullName', 'email', 'avatar', 'pronouns'])
+        .populate('admins', ['fullName', 'email', 'avatar', 'pronouns'])
+        .populate('moderators', ['fullName', 'email', 'avatar', 'pronouns'])
+        .populate('members', ['fullName', 'email', 'avatar', 'pronouns'])
         .exec()
         .then( space => {
             if(!space){

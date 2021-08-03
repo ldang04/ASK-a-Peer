@@ -18,9 +18,6 @@ const Space = require('../models/Space');
 // @access  Public
 
 router.post('/', [ // validate that required fields are filled. 
-    check('username', 'Username is required')
-    .not()
-    .isEmpty(), 
     check('fullName', 'Full name is required')
     .not()
     .isEmpty(),
@@ -34,20 +31,14 @@ router.post('/', [ // validate that required fields are filled.
         return res.status(400).json({ errors: errors.array()}); 
     }
 
-    const { username, fullName, email, password } = req.body;
+    const { fullName, email, password } = req.body;
     
     try {
         // See if user exists 
         let user = await User.findOne({ email: email });
 
         if(user){
-            return res.status(400).json({ errors: [{ msg: 'User already exists' }]});
-        }
-
-        user = await User.findOne({ username }); 
-
-        if(user){
-            return res.status(400).json({ errors: [{ msg: 'Username taken' }]});
+            return res.status(400).json({ error: 'User already exists'});
         }
 
         // Get users' gravatar 
@@ -58,7 +49,6 @@ router.post('/', [ // validate that required fields are filled.
         });
 
         user = new User({
-            username, 
             fullName,
             email, 
             avatar, 
@@ -90,7 +80,6 @@ router.post('/', [ // validate that required fields are filled.
         );
 
     } catch (err) {
-        console.error('coming from catch');
         console.error(err.message);
         res.status(500).send('Server error');
     }
@@ -106,7 +95,6 @@ router.get('/me', auth, async (req, res) => {
         // Build response object 
         const response = {}; 
         response._id = user._id; 
-        response.username = user.username; 
         response.fullName = user.fullName; 
         response.email = user.email; 
         response.avatar = user.avatar; 
@@ -132,7 +120,7 @@ router.get('/me', auth, async (req, res) => {
                 populate: {
                     path: 'creator', 
                     model: User, 
-                    select: ['username', 'avatar']
+                    select: ['fullName', 'avatar']
                 }
             }, 
             {
@@ -142,7 +130,7 @@ router.get('/me', auth, async (req, res) => {
                     {
                         path: 'creator', 
                         model: User,
-                        select: ['username', 'avatar']
+                        select: ['fullName', 'avatar']
                     }, 
                     {
                         path: 'comments',
@@ -150,7 +138,7 @@ router.get('/me', auth, async (req, res) => {
                         populate: {
                             path: 'creator', 
                             model: User, 
-                            select: ['username', 'avatar']
+                            select: ['fullName', 'avatar']
                         }
                     }
                 ]
@@ -170,7 +158,7 @@ router.get('/me', auth, async (req, res) => {
             populate: {
                 path: 'creator', 
                 model: User, 
-                select: ['username', 'avatar']
+                select: ['fullName', 'avatar']
             }
         }
     )
@@ -193,7 +181,6 @@ router.get('/me', auth, async (req, res) => {
 
 router.post('/me', auth , async (req, res) => {
     const {
-        username, 
         avatar, 
         pronouns,
         bio, 
@@ -204,7 +191,6 @@ router.post('/me', auth , async (req, res) => {
     const userFields = {}; 
     userFields.user = req.user.id; 
     
-    if(username) userFields.username = username; 
     if(avatar) userFields.avatar = avatar;
     if(pronouns) userFields.pronouns = pronouns; 
     if(bio) userFields.bio = bio; 
@@ -231,7 +217,7 @@ router.post('/me', auth , async (req, res) => {
 
 // @todo 
 // @route   POST /users/me/password
-// @desc    Forgot password/change user password using twilio (via username)
+// @desc    Forgot password/change user password using twilio
 // @access  Private
 
 // @route   GET /users/:user_id
@@ -246,11 +232,10 @@ router.get('/:user_id', async (req,res) => {
         if(!user){
             return res.status(400).send({ error: 'User not found'});
         }
-
+    
         // Build response object 
         const response = {}; 
         response._id = user._id; 
-        response.username = user.username; 
         response.fullName = user.fullName; 
         response.email = user.email; 
         response.avatar = user.avatar; 
@@ -276,7 +261,7 @@ router.get('/:user_id', async (req,res) => {
                 populate: {
                     path: 'creator', 
                     model: User, 
-                    select: ['username', 'avatar']
+                    select: ['fullName', 'avatar']
                 }
             }, 
             {
@@ -286,7 +271,7 @@ router.get('/:user_id', async (req,res) => {
                     {
                         path: 'creator', 
                         model: User,
-                        select: ['username', 'avatar']
+                        select: ['fullName', 'avatar']
                     }, 
                     {
                         path: 'comments',
@@ -294,7 +279,7 @@ router.get('/:user_id', async (req,res) => {
                         populate: {
                             path: 'creator', 
                             model: User, 
-                            select: ['username', 'avatar']
+                            select: ['fullName', 'avatar']
                         }
                     }
                 ]
@@ -314,7 +299,7 @@ router.get('/:user_id', async (req,res) => {
             populate: {
                 path: 'creator', 
                 model: User, 
-                select: ['username', 'avatar']
+                select: ['fullName', 'avatar']
             }
         }
     )
