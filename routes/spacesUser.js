@@ -33,9 +33,6 @@ router.post('/:space_id/questions', [auth, [
         const space = await Space.findOne({ _id: req.params.space_id });
         const user = await User.findOne({ _id: req.user.id });
 
-        if(!space){
-            return res.status(400).send({ error: 'Space not found'});
-        }
         const questionFields = {}; 
         questionFields.title = title; 
         questionFields.description = description; 
@@ -98,10 +95,6 @@ router.post('/:space_id/questions/:question_id', auth, async (req,res) => {
     }
 });
 
-// @todo
-// @route   POST /spaces/:space_id/questions/:question_id/answers
-// @desc    Post an answer to a space 
-// @access  Private (user must be logged in)
 
 // @route   POST /spaces/:space_id/join
 // @desc    Join a space as a member

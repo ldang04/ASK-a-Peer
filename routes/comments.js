@@ -13,4 +13,29 @@ const User = require('../models/User');
 // @desc    Upvote/downvote a comment 
 // @access  Private (user must be logged in)
 
+router.post('/:comment_id/vote', auth, async (req, res) => {
+    try {
+        const user = await User.findOne({ _id: req.user.id }); 
+        const comment = await Comment.findOne({ _id: req.params.comment_id}); 
+
+        // Check if user has already upvoted comment 
+        if(comment.upvotes.includes(user._id)){ // if already upvoted, downvote
+            const userIndex = comment.upvotes.indexOf(user._id); 
+            comment.upvotes.splice(userIndex, 1); 
+            await comment.save(); 
+            res.json(comment);
+        } else { // if hasn't upvoted, upvote
+            comment.upvotes.push(user._id); 
+            await comment.save(); 
+            res.json(comment);
+        }
+    } catch (err){
+        if(err.kind == 'ObjectId'){
+            return res.status(400).send({ error: 'Comment not found '}); 
+        }
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+}); 
+
 module.exports = router;

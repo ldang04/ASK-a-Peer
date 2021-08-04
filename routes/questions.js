@@ -44,6 +44,9 @@ router.get('/', [], async (req, res) => {
             res.json(questions);
         })
     } catch (err) {
+        if(err.kind == 'ObjectId'){
+            return res.json([]);
+        }
         console.error(err.message);
         res.json(500).send('Server Error');
     }
@@ -77,9 +80,6 @@ router.get('/:question_id', async (req, res) => {
             }]
         ).exec()
         .then( question => {
-            if (!question){
-                return res.status(400).send({ error: 'Question not found'});
-            }
             res.json(question);
         });
     } catch (err){
@@ -96,7 +96,9 @@ router.get('/:question_id', async (req, res) => {
 // @access  Private (user must be logged in)
 
 router.post('/:question_id/comments', [auth, [
-    check('text', 'Comment text is required').not().isEmpty()
+    check('text', 'Comment text is required')
+    .not()
+    .isEmpty()
 ]], async (req,res) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()){
@@ -169,15 +171,5 @@ router.delete('/:question_id/comments/:comment_id', auth, async(req,res) => {
         res.status(500).send('Server Error');
     }
 });
-
-// @todo
-// @route   POST /questions/:question_id/answers
-// @desc    Post an answer to a question
-// @access  Private (user must be logged in)
-
-// @todo
-// @route   POST /questions/:question_id/answers/:answer_id
-// @desc    Edit an answer to a question
-// @access  Private (user must be logged in)
 
 module.exports = router;
