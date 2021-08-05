@@ -8,19 +8,6 @@ const { check, validationResult } = require('express-validator');
 
 const User = require('../models/User');
 
-// @route   GET /auth
-// @desc    Test route
-// @access  Public
-router.get('/', auth, async (req, res) => {
-    try {  
-        const user = await User.findById(req.user.id).select('-password'); 
-        res.json(user);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
-});
-
 // @route   POST /auth
 // @desc    Authenticate user and get token
 // @access  Public
@@ -42,14 +29,14 @@ router.post('/', [ // validate that required fields are filled.
 
         // See if user exists
         if(!user){
-            return res.status(400).json({ error: 'Invalid credential'});
+            return res.status(400).json({ error: 'Invalid credentials'});
         }
 
         // See if password matches
         const isMatch = await bcrypt.compare(password, user.password);
 
         if(!isMatch){
-            return res.status(400).json({ errors: 'Invalid credential'});
+            return res.status(400).json({ errors: 'Invalid credentials'});
         }
 
         // Return jsonwebtoken 

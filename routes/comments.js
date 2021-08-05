@@ -8,7 +8,6 @@ const Comment = require('../models/Comment');
 const Answer = require('../models/Answer');
 const User = require('../models/User');
 
-//@todo
 // @route   POST /comments/:comment_id/vote
 // @desc    Upvote/downvote a comment 
 // @access  Private (user must be logged in)
@@ -18,6 +17,10 @@ router.post('/:comment_id/vote', auth, async (req, res) => {
         const user = await User.findOne({ _id: req.user.id }); 
         const comment = await Comment.findOne({ _id: req.params.comment_id}); 
 
+        if(!comment){
+            return res.status(400).send({ error: 'Comment not found'});
+        }
+        
         // Check if user has already upvoted comment 
         if(comment.upvotes.includes(user._id)){ // if already upvoted, downvote
             const userIndex = comment.upvotes.indexOf(user._id); 

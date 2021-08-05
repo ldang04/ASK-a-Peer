@@ -223,7 +223,7 @@ router.post('/me', auth , async (req, res) => {
 // @access  Private
 
 // @route   GET /users/:user_id
-// @desc    Get another user's account by user id
+// @desc    Get another user's account by user id (get answers and user info)
 // @access  Public
 
 router.get('/:user_id', async (req,res) => {
@@ -251,12 +251,11 @@ router.get('/:user_id', async (req,res) => {
         if(spaces){
             response.spaces = spaces; 
         }
-
-        // Questions 
-       await Question.find({ creator: { _id: user._id }})
+        
+        // Answers
+        await Answer.find({ creator: {_id: user._id }})
         .populate(
-            [
-                {
+            {
                 path: 'comments', 
                 model: Comment, 
                 populate: {
@@ -264,51 +263,13 @@ router.get('/:user_id', async (req,res) => {
                     model: User, 
                     select: ['fullName', 'avatar']
                 }
-            }, 
-            {
-                path: 'answers', 
-                model: Answer, 
-                populate: [
-                    {
-                        path: 'creator', 
-                        model: User,
-                        select: ['fullName', 'avatar']
-                    }, 
-                    {
-                        path: 'comments',
-                        model: Comment, 
-                        populate: {
-                            path: 'creator', 
-                            model: User, 
-                            select: ['fullName', 'avatar']
-                        }
-                    }
-                ]
             }
-        ]
-    )
-    .exec()
-    .then( questions => {
-        response.questions = questions; 
-    }); 
-        // Answers
-    await Answer.find({ creator: {_id: user._id }})
-    .populate(
-        {
-            path: 'comments', 
-            model: Comment, 
-            populate: {
-                path: 'creator', 
-                model: User, 
-                select: ['fullName', 'avatar']
-            }
-        }
-    )
+        )
     .exec()
     .then(answers => {
         response.answers = answers;
     });
-
+    
     res.json(response);
     } catch(err) {
         // Handle if user isn't found

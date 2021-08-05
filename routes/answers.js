@@ -49,6 +49,9 @@ router.get('/:answer_id', async (req, res) => {
         ])
         .exec()
         .then(answer => {
+            if(!answer){
+                return res.status(400).send({ error: 'Answer not found'});
+            }
             res.json(answer);
         }); 
     } catch (err){
@@ -67,6 +70,10 @@ router.get('/:answer_id', async (req, res) => {
 router.post('/:answer_id', auth, async(req, res) => {
     try {
         let answer = await Answer.findOne({ _id: req.params.answer_id });
+
+        if(!answer){
+            return res.status(400).send({ error: 'Answer not found'});
+        }
 
         if(req.user.id == answer.creator){
             const edit = {}; 
@@ -110,6 +117,10 @@ router.post('/:answer_id/comments', [auth, [
     try {
         const answer = await Answer.findOne({ _id: req.params.answer_id}); 
 
+        if(!answer){
+            return res.status(400).send({ error: 'Answer not found'});
+        }
+
         const commentFields = {}; 
         commentFields.text = text; 
         commentFields.creator = req.user.id; 
@@ -138,7 +149,11 @@ router.post('/:answer_id/vote', auth, async (req, res) => {
     try {
         const user = await User.findOne({ _id: req.user.id }); 
         const answer = await Answer.findOne({ _id: req.params.answer_id}); 
-    
+        
+        if(!answer){
+            return res.status(400).send({ error: 'Answer not found'}); 
+        }
+        
         if(answer.upvotes.includes(user._id)){
             const userIndex = answer.upvotes.indexOf(user._id);
             answer.upvotes.splice(userIndex, 1);

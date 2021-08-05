@@ -33,6 +33,10 @@ router.post('/:space_id/questions', [auth, [
         const space = await Space.findOne({ _id: req.params.space_id });
         const user = await User.findOne({ _id: req.user.id });
 
+        if(!space){
+            return res.status(400).send({ error: 'Space not found'});
+        }
+
         const questionFields = {}; 
         questionFields.title = title; 
         questionFields.description = description; 
@@ -65,7 +69,11 @@ router.post('/:space_id/questions', [auth, [
 router.post('/:space_id/questions/:question_id', auth, async (req,res) => {
     try {
         let question = await Question.findOne({ _id: req.params.question_id });
-       
+        
+        if(!question){
+            return res.status(400).send({ error: 'Question not found'}); 
+        }
+
         // Check if user has access to edit question 
         if ( req.user.id != question.creator ){
             res.status(400).send({error: 'Edit access unauthorized'});
@@ -104,6 +112,10 @@ router.post('/:space_id/join', auth, async(req,res) => {
     try {
         const user = await User.findOne({ _id: req.user.id });
         const space = await Space.findOne({ _id:req.params.space_id });
+        
+        if(!space){
+            return res.status(400).send({ error: 'Space not found'});
+        }
         
         // Check if user is already in space
         if(space.members.includes(req.user.id)){

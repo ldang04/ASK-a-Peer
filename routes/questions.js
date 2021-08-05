@@ -80,6 +80,9 @@ router.get('/:question_id', async (req, res) => {
             }]
         ).exec()
         .then( question => {
+            if(!question){
+                return res.status(400).send({ error: 'Question not found'});
+            }
             res.json(question);
         });
     } catch (err){
@@ -107,6 +110,10 @@ router.post('/:question_id/comments', [auth, [
     try {
         const question = await Question.findOne({ _id: req.params.question_id });
 
+        if(!question){
+            return res.status(400).send({ error: 'Question not found'});
+        }
+
         const commentText = {
             text: req.body.text, 
             creator: req.user.id
@@ -123,50 +130,6 @@ router.post('/:question_id/comments', [auth, [
         if (err.kind == "ObjectId"){
             return res.status(400).send({error: 'Question not found'})
         }
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
-});
-
-// @route   DELETE questions/:question_id/comments/:comment_id
-// @desc    Delete a comment in a question
-// @access  Private (user must be logged in)
-
-router.delete('/:question_id/comments/:comment_id', auth, async(req,res) => {
-    try {
-        const user = await User.findOne({ _id: req.user.id });
-        const question = await Question.findOne({ _id: req.params.question_id });
-        let comment = await Comment.findOne({ _id: req.params.comment_id });
-
-        if(!question) {
-            return res.status(400).send('Question not found');
-        }
-        
-        if(!comment){
-            return res.status(400).send('Comment not found');
-        }
-
-        if(!question.comments.includes(comment._id)){
-            return res.status(400).send('This comment does not belong to the given question. Check browser URL.');
-        }
-
-        if(req.user.id == comment.creator || space.moderators.includes(req.user.id) || user.admin){
-            const commentIndex = question.comments.indexOf(req.params.comment_id);
-            question.comments.splice(commentIndex, 1);
-            
-            await Comment.findOneAndRemove({ _id: req.params.comment_id });
-            await question.save();
-    
-            res.json('Comment deleted');
-        } else {
-            res.status(400).send('Comment delete access unauthorized');
-        }
-        
-    } catch (err) {
-        if(err.kind == "ObjectId"){
-            return res.status(400).send({ error: "Comment not found"});
-        }
-
         console.error(err.message);
         res.status(500).send('Server Error');
     }

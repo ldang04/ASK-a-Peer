@@ -72,6 +72,10 @@ router.post('/:space_id', [auth, [
         const user = await User.findOne({ _id: req.user.id });
         let space = await Space.findOne({ _id: req.params.space_id }); 
         
+        if(!space){
+            return res.status(400).send({ error: 'Space not found'});
+        }
+
         // Check if user has admin access
         if (user.admin || space.admins.includes(user._id)){
             const newTitle = {title: req.body.title}; 
@@ -91,7 +95,7 @@ router.post('/:space_id', [auth, [
     } catch (err) {
         // handle if space isn't found 
         if(err.kind == "ObjectId"){
-            return res.status(404).send('Space does not exist'); 
+            return res.status(404).send('Space not found'); 
         }
         console.error(err.message); 
         res.status(500).send('Server Error');
@@ -107,6 +111,10 @@ router.delete('/:space_id', auth, async (req,res) => {
     try {
         const user = await User.findOne({ _id: req.user.id }); 
         const space = await Space.findOne({ _id: req.params.space_id});
+
+        if(!space){
+            return res.status(400).send({ error: 'Space not found'});
+        }
 
         // Check if user has admin access 
         if(user.admin || space.admins.includes(user._id)){
@@ -163,6 +171,10 @@ router.post('/:space_id/admins', [auth, [
         const user = await User.findOne({ _id: req.user.id });
         const space = await Space.findOne({ _id: req.params.space_id });
 
+        if(!space){
+            return res.status(400).send({ error: 'Space not found'});
+        }
+
         // Check if user has admin access 
         if(user.admin || space.admins.includes(user._id)){
             const newAdmin = await User.findOne({ email });
@@ -214,6 +226,10 @@ router.post('/:space_id/admins/delete', [auth, [
         const user = await User.findOne({ _id: req.user.id });
         const space = await Space.findOne({ _id: req.params.space_id }); 
 
+        if(!space){
+            return res.status(400).send({ error: 'Space not found'});
+        }
+
         if(user.admin || space.admins.includes(user._id)){
             const spaceAdmin = await User.findOne({ email }); 
 
@@ -260,6 +276,10 @@ router.post('/:space_id/moderators', [auth, [
     try {
         const user = await User.findOne({_id: req.user.id});
         const space = await Space.findOne({ _id: req.params.space_id });
+
+        if(!space){
+            return res.status(400).send({ error: 'Space not found'});
+        }
 
         // Check if user has admin access 
         if(user.admin || space.admins.includes(user._id)){
@@ -312,6 +332,10 @@ router.post('/:space_id/moderators/delete', [auth, [
         const user = await User.findOne({_id: req.user.id });
         const space = await Space.findOne({ _id: req.params.space_id});
 
+        if(!space){
+            return res.status(400).send({ error: 'Space not found'});
+        }
+
         if(user.admin || space.admins.includes(req.user.id)){
             const moderator = await User.findOne({ email }); 
 
@@ -344,25 +368,30 @@ router.post('/:space_id/moderators/delete', [auth, [
 // @desc    Delete a comment in a question
 // @access  Private (user must be logged in)
 
-router.delete('/:question_id/comments/:comment_id', auth, async(req,res) => {
+router.delete('/:space_id/questions/:question_id/comments/:comment_id', auth, async(req,res) => {
     try {
         const user = await User.findOne({ _id: req.user.id });
+        const space = await Space.findOne({ _id: req.params.space_id});
         const question = await Question.findOne({ _id: req.params.question_id });
         let comment = await Comment.findOne({ _id: req.params.comment_id });
 
+        if(!space){
+            return res.status(400).send({ error: 'Space not found'})
+        }
+
         if(!question) {
-            return res.status(400).send('Question not found');
+            return res.status(400).send({ error : 'Question not found'});
         }
         
         if(!comment){
-            return res.status(400).send('Comment not found');
+            return res.status(400).send({ error: 'Comment not found'});
         }
 
         if(!question.comments.includes(comment._id)){
             return res.status(400).send('This comment does not belong to the given question. Check browser URL.');
         }
 
-        if(req.user.id == comment.creator || space.moderators.includes(req.user.id) || user.admin){
+        if(req.user.id == comment.creator || space.admins.includes(req.user.id) || space.moderators.includes(req.user.id) || user.admin){
             const commentIndex = question.comments.indexOf(req.params.comment_id);
             question.comments.splice(commentIndex, 1);
             
@@ -384,30 +413,45 @@ router.delete('/:question_id/comments/:comment_id', auth, async(req,res) => {
     }
 });
 
-// @todo
 // @route   DELETE /spaces/:space_id/answers/:answer_id/comments/:comment_id
 // @desc    Delete a comment in an answer
 // @access  Private (admin/space admin/moderator/user)
 
-// router.delete('/:space_id/answers/:answer_id/comments/:comment_id', auth, async (req, res) => {
-//     try {
-//         const user = await User.findOne({ _id: req.user.id}); 
-//         const answer = await Answer.findOne({ _id: req.params.answer_id }); 
-//         const comment = await Comment.findOne({ _id: req.params.comment_id }); 
+router.delete('/:space_id/answers/:answer_id/comments/:comment_id', auth, async (req, res) => {
+    try {
+        const user = await User.findOne({ _id: req.user.id});
+        const space = await Space.findOne({ _id: req.params.space_id }); 
 
-//         if(!comment){
-//             return res.status(400).send({ error: 'Comment not found'}); 
-//         }
+        if(!space){
+            return res.status(400).send({ error: 'Space not found'});
+        }
+        
+        if(user.admin || space.admins.includes(user._id) || space.moderators.includes(user._id) || user._id == comment.creator){
+            try {
+                const answer = await Answer.findOne({ _id: req.params.answer_id }); 
+                let comment = await Comment.findOne({ _id: req.params.comment_id });
 
-//         if(user.admin || )
+                const commentIdx = answer.comments.indexOf(comment._id); 
+                answer.comments.splice(commentIdx, 1); 
 
-//     } catch (err){
-//         if(err.kind == 'ObjectId'){
-//             return res.status(400).send({ error: 'Answer and/or comment not found'}); 
-//         }
-//         console.error(err.message);
-//         res.status(500).send('Server Error');
-//     }
-// }); 
+                await Comment.findOneAndRemove({ _id: req.params.comment_id}); 
+                await answer.save();
+
+                res.json(answer);
+            } catch (err){
+                res.status(400).send({ error: 'Answer and/or comment not found.'}); 
+            }
+        } else {
+            res.status(400).send({ error: 'Comment delete access unauthorized'}); 
+        }
+
+    } catch (err){
+        if(err.kind == 'ObjectId'){
+            return res.status(400).send({ error: 'Space not found'}); 
+        }
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+}); 
 
 module.exports = router;
