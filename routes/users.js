@@ -104,11 +104,12 @@ router.get('/me', auth, async (req, res) => {
 });
 
 // @route   POST /users/me
-// @desc    Update user info (not password)
+// @desc    Update user info
 // @access  Private
 
 router.post('/me', auth , async (req, res) => {
     const {
+        password,
         avatar, 
         pronouns,
         bio, 
@@ -119,6 +120,12 @@ router.post('/me', auth , async (req, res) => {
     const userFields = {}; 
     userFields.user = req.user.id; 
     
+    if(password){
+        const salt = await bcrypt.genSalt(10);
+
+        let hashedPassword = await bcrypt.hash(password, salt);
+        userFields.password = hashedPassword; 
+    }
     if(avatar) userFields.avatar = avatar;
     if(pronouns) userFields.pronouns = pronouns; 
     if(bio) userFields.bio = bio; 
@@ -142,11 +149,6 @@ router.post('/me', auth , async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
-
-// @todo 
-// @route   POST /users/me/password
-// @desc    Forgot password/change user password using twilio
-// @access  Private
 
 // @route   GET /users/:user_id
 // @desc    Get another user's account by user id (get answers and user info)
@@ -205,11 +207,6 @@ router.get('/:user_id', async (req,res) => {
     }
 });
 
-// @todo 
-// @route   POST /users/updatepassword
-// @desc    Update password
-// @access  Private
-
 // @route   DELETE /users
 // @desc    Delete a user account 
 // @access  Private
@@ -228,33 +225,4 @@ router.delete('/', auth, async (req,res) => {
     }
 });
 
-
-// Test route 
-router.get('/emailme/emailme', async (req, res) => {
-    try {
-
-        let transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 465,
-            secure: true, // true for 465, false for other ports
-            auth: {
-                user: 'askapeer.andover@gmail.com', // generated ethereal user
-                pass: 'ASKaPeer@PhiAca', // generated ethereal password
-            }
-        });
-
-        // send mail with defined transport object
-        let info = await transporter.sendMail({
-        from: '"ASK-a-Peer" <askapeer.andover@gmail.com>', // sender address
-        to: "ddang23@andover.edu", // list of receivers
-        subject: "Test email from ASK-a-Peer!!!", // Subject line
-        text: "HEYYYYYYYYYYYYYYY", // plain text body
-        html: "<b>Hello world?</b>", // html body
-        });
-        res.send('email sent');
-    } catch (err){
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
-}); 
 module.exports = router;

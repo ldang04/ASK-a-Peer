@@ -60,7 +60,7 @@ router.post('/register', [ // validate that required fields are filled.
         jwt.sign(
             payload, 
             config.get('jwtSecret'), 
-            { expiresIn: '1d' }, 
+            { expiresIn: '3600' }, 
             async (err, token) => {
                 if(err) throw err; 
 
@@ -74,7 +74,7 @@ router.post('/register', [ // validate that required fields are filled.
 
                     <a href="http://localhost:5000/auth/confirmation/${token}"> Verify Account </a>
 
-                    <p> <b> Important: This link will expire within 24 hours. </b> </p>
+                    <p> <b> Important: This one-time link will expire within 1 hour. </b> </p>
                     
                 `
                 // Send account verification email
@@ -105,7 +105,7 @@ router.post('/register', [ // validate that required fields are filled.
 
 // @route   GET /auth/confirmation/:token
 // @desc    Authenticate user and get token
-// @access  Public
+// @access  Private
 
 router.get('/confirmation/:token', async (req, res) => {
     try {  
@@ -120,6 +120,106 @@ router.get('/confirmation/:token', async (req, res) => {
     }
     return res.redirect('/auth/login');
 }); 
+
+// @route   POST /auth/resend
+// @desc    Resend an account confirmation email to a user
+// @access  Public
+
+router.post('/resend', [
+    check('email', 'Please enter a valid email')
+    .isEmail()
+], async (req, res) => {
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        return res.status(400).send({ error: error.errors[0].msg }); 
+    }
+    const { email } = req.body; 
+    try {
+        const user = await User.findOne({ email });
+
+        if(!user){
+            return res.status(400).send({ error: 'User not found'}); 
+        }
+
+        if(user.emailVerified){
+            res.send('User email address has already been confirmed'); 
+            return res.redirect('/auth/login'); 
+        }
+
+        const payload = {
+            user: {
+                id: user.id
+            }
+        }
+
+        jwt.sign(
+            payload, 
+            config.get('jwtSecret'), 
+            { expiresIn: '3600' }, 
+            async (err, token) => {
+                if(err) throw err; 
+
+                const emailBody = `
+                    <p>
+                    Please confirm your email address by clicking the link below: 
+                    </p>
+
+                    <a href="http://localhost:5000/auth/confirmation/${token}"> Verify Account </a>
+
+                    <p> <b> Important: This one-time link will expire within 1 hour. </b> </p>
+                    
+                `
+                // Send account verification email
+                let transporter = nodemailer.createTransport({
+                    host: "smtp.gmail.com",
+                    port: 465,
+                    secure: true, 
+                    auth: {
+                        user: 'askapeer.andover@gmail.com', 
+                        pass: config.get('emailPass'), 
+                    }
+                });
+        
+                let info = await transporter.sendMail({
+                from: '"ASK-a-Peer" <askapeer.andover@gmail.com>', 
+                to: email, 
+                subject: "ASK-a-Peer: Confirm your email address", 
+                html: emailBody,
+                });
+            }
+        );
+        res.json('Confirmation email sent');
+    } catch (err){
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+}); 
+
+// @todo 
+// @route   POST /auth/forgotpassword
+// @desc    Forgot password
+// @access  Private
+
+// router.post('/forgotpassword', [
+//     check('email', 'Please enter a valid email')
+//     .isEmail()
+// ], async (req, res) => {
+//     const error = validationResult(req);
+//     if(!error.isEmpty()){
+//         return res.status(400).send({ error: error.errors[0].msg }); 
+//     }
+//     const { email } = req.body;
+//     try {
+//         const user = await User.findOne({ email }); 
+//         if(!user){
+//             return res.status(400).send({ error: 'User not found'}); 
+//         }
+
+//     } catch (err) {
+//         console.error(err.message);
+//         res.status(500).send('Server error');
+//     }
+// }); 
 
 // @route   POST /auth/login
 // @desc    Authenticate user and get token
