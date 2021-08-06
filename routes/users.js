@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 const config = require('config');
 const { check, validationResult } = require('express-validator');
 const auth = require('../middleware/auth');
@@ -12,80 +12,6 @@ const Question = require('../models/Question');
 const Answer = require('../models/Answer')
 const Comment = require('../models/Comment');
 const Space = require('../models/Space');
-
-// @route   POST /users
-// @desc    Register a user 
-// @access  Public
-
-router.post('/', [ // validate that required fields are filled. 
-    check('fullName', 'Full name is required')
-    .not()
-    .isEmpty(),
-    check('email', 'Please enter a valid email')
-    .isEmail(), 
-    check('password', 'Please enter a password with 6 or more characters')
-    .isLength({ min: 6})
-], async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()){ // if errors are present in request
-        return res.status(400).json({ errors: errors.array()}); 
-    }
-
-    const { fullName, email, password } = req.body;
-    
-    try {
-        // See if user exists 
-        let user = await User.findOne({ email: email });
-
-        if(user){
-            return res.status(400).json({ error: 'User already exists'});
-        }
-
-        // Get users' gravatar 
-        const avatar = gravatar.url(email, {
-            s: '200', 
-            r: 'pg', 
-            d: 'mm'
-        });
-
-        user = new User({
-            fullName,
-            email, 
-            avatar, 
-            password
-        }); 
-
-        // Encrypt password 
-        const salt = await bcrypt.genSalt(10);
-
-        user.password = await bcrypt.hash(password, salt);
-
-        // @todo Create user email validation feature via twilio
-
-        await user.save();
-
-        // Return jsonwebtoken 
-        const payload = {
-            user: {
-                id: user.id
-            }
-        }
-
-        jwt.sign(
-            payload, 
-            config.get('jwtSecret'), 
-            { expiresIn: 259200 }, // expires every three hours (configured to 3 days for dev purposes)
-            (err, token) => {
-                if(err) throw err; 
-                res.json({ token }); // returns webtoken
-            }
-        );
-
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error');
-    }
-});
 
 // @route   GET /users/me
 // @desc    Get current user
@@ -251,7 +177,7 @@ router.get('/:user_id', async (req,res) => {
         if(spaces){
             response.spaces = spaces; 
         }
-        
+
         // Answers
         await Answer.find({ creator: {_id: user._id }})
         .populate(
@@ -279,6 +205,11 @@ router.get('/:user_id', async (req,res) => {
     }
 });
 
+// @todo 
+// @route   POST /users/updatepassword
+// @desc    Update password
+// @access  Private
+
 // @route   DELETE /users
 // @desc    Delete a user account 
 // @access  Private
@@ -297,4 +228,33 @@ router.delete('/', auth, async (req,res) => {
     }
 });
 
+
+// Test route 
+router.get('/emailme/emailme', async (req, res) => {
+    try {
+
+        let transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true, // true for 465, false for other ports
+            auth: {
+                user: 'askapeer.andover@gmail.com', // generated ethereal user
+                pass: 'ASKaPeer@PhiAca', // generated ethereal password
+            }
+        });
+
+        // send mail with defined transport object
+        let info = await transporter.sendMail({
+        from: '"ASK-a-Peer" <askapeer.andover@gmail.com>', // sender address
+        to: "ddang23@andover.edu", // list of receivers
+        subject: "Test email from ASK-a-Peer!!!", // Subject line
+        text: "HEYYYYYYYYYYYYYYY", // plain text body
+        html: "<b>Hello world?</b>", // html body
+        });
+        res.send('email sent');
+    } catch (err){
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+}); 
 module.exports = router;
