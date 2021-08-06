@@ -8,6 +8,7 @@ const { check, validationResult } = require('express-validator');
 const auth = require('../middleware/auth');
 
 const User = require('../models/User');
+const UsedToken = require('../models/UsedToken');
 
 // @route   POST auth/register
 // @desc    Register a user 
@@ -60,12 +61,12 @@ router.post('/register', [ // validate that required fields are filled.
         jwt.sign(
             payload, 
             config.get('jwtSecret'), 
-            { expiresIn: '3600' }, 
+            { expiresIn: '1d' }, 
             async (err, token) => {
                 if(err) throw err; 
 
                 const emailBody = `
-                    <p> Thanks for joining ASK-a-Peer! We're glad to have you as a member of our peer tutoring platform :)  
+                    <p> Thanks for joining ASK-a-Peer! We're glad to have you as a member of our peer tutoring platform!  
                     </p> 
 
                     <p>
@@ -74,8 +75,10 @@ router.post('/register', [ // validate that required fields are filled.
 
                     <a href="http://localhost:5000/auth/confirmation/${token}"> Verify Account </a>
 
-                    <p> <b> Important: This one-time link will expire within 1 hour. </b> </p>
-                    
+                    <p> <b> Important: This link will expire within 24 hours. </b> </p>
+                    <br />
+                    <p><i> ASK-a-Peer is made possible by a grant from the Abbot Academy Fund, continuing Abbot's tradition of
+                    boldness, innovation, and caring. </i></p>
                 `
                 // Send account verification email
                 let transporter = nodemailer.createTransport({
@@ -155,7 +158,7 @@ router.post('/resend', [
         jwt.sign(
             payload, 
             config.get('jwtSecret'), 
-            { expiresIn: '3600' }, 
+            { expiresIn: '1d' }, 
             async (err, token) => {
                 if(err) throw err; 
 
@@ -166,7 +169,7 @@ router.post('/resend', [
 
                     <a href="http://localhost:5000/auth/confirmation/${token}"> Verify Account </a>
 
-                    <p> <b> Important: This one-time link will expire within 1 hour. </b> </p>
+                    <p> <b> Important: This link will expire within 24 hours. </b> </p>
                     
                 `
                 // Send account verification email
@@ -195,32 +198,130 @@ router.post('/resend', [
     }
 }); 
 
-// @todo 
 // @route   POST /auth/forgotpassword
 // @desc    Forgot password
 // @access  Private
 
-// router.post('/forgotpassword', [
-//     check('email', 'Please enter a valid email')
-//     .isEmail()
-// ], async (req, res) => {
-//     const error = validationResult(req);
-//     if(!error.isEmpty()){
-//         return res.status(400).send({ error: error.errors[0].msg }); 
-//     }
-//     const { email } = req.body;
-//     try {
-//         const user = await User.findOne({ email }); 
-//         if(!user){
-//             return res.status(400).send({ error: 'User not found'}); 
-//         }
+router.post('/forgotpassword', [
+    check('email', 'Please enter a valid email')
+    .isEmail()
+], async (req, res) => {
+    const error = validationResult(req);
+    if(!error.isEmpty()){
+        return res.status(400).send({ error: error.errors[0].msg }); 
+    }
+    const { email } = req.body;
+    try {
+        const user = await User.findOne({ email }); 
+        if(!user){
+            return res.status(400).send({ error: 'User not found'}); 
+        }
+        // Send an email to a user with a jwt reset password link 
+        const payload = {
+            user: {
+                id: user.id
+            }
+        }
 
-//     } catch (err) {
-//         console.error(err.message);
-//         res.status(500).send('Server error');
-//     }
-// }); 
+        jwt.sign(
+            payload, 
+            config.get('jwtSecret'), 
+            { expiresIn: '1d' }, 
+            async (err, token) => {
+                if(err) throw err; 
 
+                const emailBody = `
+                    <p>
+                    Hello! You are receiving this email because we received a password reset request from your account. 
+                    </p>
+
+                    <p> Click the link below to reset your password: </p>
+                    <a href="http://localhost:5000/auth/resetpassword/${token}"> Reset Password </a>
+
+                    <p> If you did not request a password reset, no further action is required. </p>
+                    <p> <b> Important: This <u>one-time</u> link will expire within 24 hours. </b> </p>
+                    
+                `
+                // Send account verification email
+                let transporter = nodemailer.createTransport({
+                    host: "smtp.gmail.com",
+                    port: 465,
+                    secure: true, 
+                    auth: {
+                        user: 'askapeer.andover@gmail.com', 
+                        pass: config.get('emailPass'), 
+                    }
+                });
+        
+                let info = await transporter.sendMail({
+                from: '"ASK-a-Peer" <askapeer.andover@gmail.com>', 
+                to: email, 
+                subject: "ASK-a-Peer: Reset Password", 
+                html: emailBody,
+                });
+            }
+        );
+        res.json('Reset password email sent');
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+}); 
+
+// @route   GET /auth/resetpassword/:token
+// @desc    Redirect route to change user password
+// @access  Private
+
+router.get('/resetpassword/:token', (req, res) => {
+    try {  
+        return res.status(200).send('Reset Password Page');
+    } catch (err){
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+}); 
+
+// @todo : fix bug : jwt always throwing expired error
+// @route   POST /auth/resetpassword/:token
+// @desc    Change user password
+// @access  Private
+
+router.post('/resetpassword/:token', [
+    check('password', 'Please enter a password with 6 or more characters')
+    .isLength({ min: 6})
+], async (req, res) => {
+    const error = validationResult(req); 
+    if(!error.isEmpty()){
+        return res.status(400).send({ error: error.errors[0].msg}); 
+    }
+    const { password } = req.body;
+    try {
+        const token = await UsedToken.findOne({ token: req.params.token }); 
+        if(token){
+            return res.status(400).send({ error: 'This link has expired'}); 
+        }
+        
+        try {
+            const { user: { id }} = jwt.verify(req.params.token, config.get('jwtSecret')); 
+            await User.findOneAndUpdate(
+                { _id: id}, 
+                { $set: { password }}
+            );
+            const usedToken = new UsedToken({token: req.params.token});
+            await usedToken.save()
+        } catch(err) {
+            if(err.message == 'jwt expired'){
+                return res.status(400).send({ error: 'This link has expired'}); 
+            }
+            console.error(err.message);
+            return res.status(400).send({ error: 'Unable to reset password'}); 
+        }
+        res.status(200).send('Password changed');
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+}); 
 // @route   POST /auth/login
 // @desc    Authenticate user and get token
 // @access  Public
