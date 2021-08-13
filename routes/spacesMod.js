@@ -29,11 +29,11 @@ router.post('/:space_id/questions/:question_id/answers', [auth, [
         const question = await Question.findOne({ _id: req.params.question_id}); 
 
         if(!space){
-            return res.status(400).send({ error: 'Space not found'});
+            return res.status(404).send({ error: 'Space not found'});
         }
 
         if(!question){
-            return res.status(400).send({ error: 'Question not found'}); 
+            return res.status(404).send({ error: 'Question not found'}); 
         }
 
         if(user.admin || space.admins.includes(user._id) || space.moderators.includes(user._id)){
@@ -49,16 +49,16 @@ router.post('/:space_id/questions/:question_id/answers', [auth, [
             await answer.save();
             await question.save();
 
-            res.json(question);
+            res.json({ msg: 'Answer posted'});
         } else {
-            res.status(400).send({ error: 'Admin or moderator access is required to post a question'}); 
+            res.status(401).send({ error: 'Admin or moderator access is required to post an answer'}); 
         }
     } catch (err){
         if (err.kind == 'ObjectId'){
-            return res.status(400).send({ error: 'Space and/or question not found'});
+            return res.status(404).send({ error: 'Space and/or question not found'});
         }
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 });
 
@@ -74,15 +74,15 @@ router.delete('/:space_id/questions/:question_id/answers/:answer_id', auth, asyn
         const answer = await Answer.findOne({ _id: req.params.answer_id }); 
 
         if(!space){
-            return res.status(400).send({ error: 'Space not found' }); 
+            return res.status(404).send({ error: 'Space not found' }); 
         }
 
         if(!question){
-            return res.status(400).send({ error: 'Question not found' }); 
+            return res.status(404).send({ error: 'Question not found' }); 
         }
 
         if(!answer){
-            return res.status(400).send({ error: 'Answer not found'}); 
+            return res.status(404).send({ error: 'Answer not found'}); 
         }
 
         if(user.admin || space.admins.includes(user._id) || space.moderators.includes(users._id) || user._id == answer.creator){
@@ -104,16 +104,16 @@ router.delete('/:space_id/questions/:question_id/answers/:answer_id', auth, asyn
             // Delete answer
             await Answer.findOneAndRemove({ _id: answer._id }); 
             await question.save();
-            res.json(question);
+            res.json({msg: 'Answer deleted'});
         } else {
-            res.status(400).send({ error: 'Answer delete access unauthorized'}); 
+            res.status(401).send({ error: 'Answer delete access unauthorized'}); 
         }
     } catch (err){
         if(err.kind == 'ObjectId'){
-            return res.status(400).send({ error: 'Space, question, and/or answer not found'}); 
+            return res.status(404).send({ error: 'Space, question, and/or answer not found'}); 
         }
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 });
 
@@ -128,11 +128,11 @@ router.delete('/:space_id/questions/:question_id', auth, async (req, res) => {
         const question = await Question.findOne({ _id: req.params.question_id }); 
 
         if(!space){
-            return res.status(400).send({ error: 'Space not found'});
+            return res.status(404).send({ error: 'Space not found'});
         }
 
         if(!question){
-            return res.status(400).send({ error: 'Question not found'});
+            return res.status(404).send({ error: 'Question not found'});
         }
 
         if(user.admin || space.admins.includes(user._id) || space.moderators.includes(user._id)){
@@ -165,16 +165,16 @@ router.delete('/:space_id/questions/:question_id', auth, async (req, res) => {
             
             await Question.findOneAndRemove({ _id: question._id });
             await space.save();
-            res.json(space);
+            res.json({msg: 'Question deleted'});
         } else {
-            res.status(400).send({ error: 'Question delete access unauthorized'}); 
+            res.status(401).send({ error: 'Question delete access unauthorized'}); 
         }
     } catch (err){
         if(err.kind == 'ObjectId'){
-            return res.status(400).send({ error: 'Space and/or question not found' });
+            return res.status(404).send({ error: 'Space and/or question not found' });
         }
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 });
 

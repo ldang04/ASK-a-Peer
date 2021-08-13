@@ -75,6 +75,9 @@ router.get('/me', auth, async (req, res) => {
     )
     .exec()
     .then( questions => {
+        if(!questions){
+            return res.status(400).send({ error: 'Something went wrong. No questions can be found at this time.'}); 
+        }
         response.questions = questions; 
     }); 
         // Answers
@@ -92,6 +95,9 @@ router.get('/me', auth, async (req, res) => {
     )
     .exec()
     .then(answers => {
+        if(!answers){
+            return res.status(400).send({ error: 'Something went wrong. No answers can be found at this time.'})
+        }
         response.answers = answers;
     });
     
@@ -99,7 +105,7 @@ router.get('/me', auth, async (req, res) => {
 
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 });
 
@@ -143,10 +149,10 @@ router.post('/me', auth , async (req, res) => {
 
          user = await User.findOne({ _id: req.user.id }).select('-password');
             
-         return res.json(user);
+         return res.json({msg: 'User updated'});
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 });
 
@@ -159,7 +165,7 @@ router.get('/:user_id', async (req,res) => {
         const user = await User.findOne({ _id: req.params.user_id }).select('-password');
         
         if(!user){
-            return res.status(400).send({ error: 'User not found'});
+            return res.status(404).send({ error: 'User not found'});
         }
     
         // Build response object 
@@ -201,9 +207,9 @@ router.get('/:user_id', async (req,res) => {
     res.json(response);
     } catch(err) {
         // Handle if user isn't found
-        if (err.kind == 'ObjectId') return res.status(400).json({ error: 'User not found '})
+        if (err.kind == 'ObjectId') return res.status(404).json({ error: 'User not found '}); 
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 });
 
@@ -215,13 +221,11 @@ router.delete('/', auth, async (req,res) => {
     try {
         // Delete user
         await User.findOneAndRemove({ _id: req.user.id });
-
-        // @todo make json webtoken invalid
         res.json({ msg: 'User deleted' });
 
     } catch (err) {
         console.error(err.message);
-        res.json(500).send('Server Error');
+        res.json(500).send({error: 'Server Error'});
     }
 });
 

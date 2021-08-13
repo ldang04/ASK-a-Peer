@@ -16,12 +16,12 @@ router.get('/', async (req, res) => {
     try {
         const spaces = await Space.find(); 
         if(!spaces){
-            return res.status(400).send({error: 'No spaces found'});
+            return res.status(400).send({error: 'Something went wrong. No spaces can be found at this time'});
         }
         res.json(spaces);
     } catch (err){
         console.error(err.message);
-        res.json(500).send('Server error');
+        res.json(500).send({error: 'Server error'});
     }
 });
 
@@ -77,17 +77,17 @@ router.get('/:space_id', async (req,res) => {
         .exec()
         .then( space => {
             if(!space){
-                return res.status(400).send({error: 'Space not found'});
+                return res.status(404).send({error: 'Space not found'});
             }
             res.json(space);
         });
     } catch (err) {
         // Handle if space isn't found 
         if(err.kind == "ObjectId"){
-            return res.status(400).send({error: 'Space not found'});
+            return res.status(404).send({error: 'Space not found'});
         }
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 });
 

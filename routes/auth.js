@@ -99,15 +99,15 @@ router.post('/register', [ // validate that required fields are filled.
                 });
             }
         );
-        res.json('Confirmation email sent');
+        res.json({msg: 'Confirmation email sent'});
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server error');
+        res.status(500).send({error: 'Server error'});
     }
 });
 
 // @route   GET /auth/confirmation/:token
-// @desc    Authenticate user and get token
+// @desc    Page for when user clicks on email confirmation link
 // @access  Private
 
 router.get('/confirmation/:token', async (req, res) => {
@@ -117,9 +117,10 @@ router.get('/confirmation/:token', async (req, res) => {
             { _id: id}, 
             { $set: {emailVerified: true }}
         ); 
+        return res.send('Email confirmation page');
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server error');
+        res.status(500).send({error: 'Server error'});
     }
     return res.redirect('/auth/login');
 }); 
@@ -141,7 +142,7 @@ router.post('/resend', [
         const user = await User.findOne({ email });
 
         if(!user){
-            return res.status(400).send({ error: 'User not found'}); 
+            return res.status(404).send({ error: 'User not found'}); 
         }
 
         if(user.emailVerified){
@@ -191,10 +192,10 @@ router.post('/resend', [
                 });
             }
         );
-        res.json('Confirmation email sent');
+        res.json({msg: 'Confirmation email sent'});
     } catch (err){
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 }); 
 
@@ -261,10 +262,10 @@ router.post('/forgotpassword', [
                 });
             }
         );
-        res.json('Reset password email sent');
+        res.json({msg: 'Reset password email sent'});
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server error');
+        res.status(500).send({error: 'Server error'});
     }
 }); 
 
@@ -274,14 +275,13 @@ router.post('/forgotpassword', [
 
 router.get('/resetpassword/:token', (req, res) => {
     try {  
-        return res.status(200).send('Reset Password Page');
+        return res.send('Reset Password Page');
     } catch (err){
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 }); 
 
-// @todo : fix bug : jwt always throwing expired error
 // @route   POST /auth/resetpassword/:token
 // @desc    Change user password
 // @access  Private
@@ -302,10 +302,13 @@ router.post('/resetpassword/:token', [
         }
         
         try {
+            const salt = await bcrypt.genSalt(10);
+            const encryptedPass = await bcrypt.hash(password, salt);
             const { user: { id }} = jwt.verify(req.params.token, config.get('jwtSecret')); 
             await User.findOneAndUpdate(
                 { _id: id}, 
-                { $set: { password }}
+                { $set: { password: encryptedPass }}, 
+                { new: true}
             );
             const usedToken = new UsedToken({token: req.params.token});
             await usedToken.save()
@@ -316,12 +319,13 @@ router.post('/resetpassword/:token', [
             console.error(err.message);
             return res.status(400).send({ error: 'Unable to reset password'}); 
         }
-        res.status(200).send('Password changed');
+        res.status(200).json({msg: 'Password changed'});
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 }); 
+
 // @route   POST /auth/login
 // @desc    Authenticate user and get token
 // @access  Public
@@ -355,7 +359,7 @@ router.post('/login', [ // validate that required fields are filled.
         const isMatch = await bcrypt.compare(password, user.password);
 
         if(!isMatch){
-            return res.status(400).json({ errors: 'Invalid credentials'});
+            return res.status(400).json({ error: 'Invalid credentials'});
         }
 
         // Return jsonwebtoken 
@@ -377,7 +381,7 @@ router.post('/login', [ // validate that required fields are filled.
 
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server error');
+        res.status(500).send({error: 'Server error'});
     }
 });
 

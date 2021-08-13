@@ -27,7 +27,7 @@ router.post('/', [auth, [
 
         // Check if user has admin access 
         if(!user.admin){
-            return res.status(400).send({error: 'Admin access is required to create a space.'});
+            return res.status(401).send({error: 'Admin access is required to create a space.'});
         }
 
         let space = await Space.findOne({ title: req.body.title }); 
@@ -49,10 +49,10 @@ router.post('/', [auth, [
         space = new Space(spaceFields);
         await space.save();
 
-        res.json(space);
+        res.json({msg: 'Space created'});
     } catch (err) {
         console.error(err.message);
-        res.json(500).send('Server error');
+        res.json(500).send({error: 'Server error'});
     }
 });
 
@@ -73,7 +73,7 @@ router.post('/:space_id', [auth, [
         let space = await Space.findOne({ _id: req.params.space_id }); 
         
         if(!space){
-            return res.status(400).send({ error: 'Space not found'});
+            return res.status(404).send({ error: 'Space not found'});
         }
 
         // Check if user has admin access
@@ -87,9 +87,9 @@ router.post('/:space_id', [auth, [
             ); 
     
             await space.save();
-            res.json(space);
+            res.json({msg: 'Space updated'});
         } else {
-            return res.status(400).send({error: 'Admin access required to edit space'});
+            return res.status(401).send({error: 'Admin access is required to edit a space'});
         }
 
     } catch (err) {
@@ -98,7 +98,7 @@ router.post('/:space_id', [auth, [
             return res.status(404).send('Space not found'); 
         }
         console.error(err.message); 
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 
 });
@@ -113,7 +113,7 @@ router.delete('/:space_id', auth, async (req,res) => {
         const space = await Space.findOne({ _id: req.params.space_id});
 
         if(!space){
-            return res.status(400).send({ error: 'Space not found'});
+            return res.status(404).send({ error: 'Space not found'});
         }
 
         // Check if user has admin access 
@@ -139,18 +139,18 @@ router.delete('/:space_id', auth, async (req,res) => {
 
         // Delete space
             await Space.findOneAndRemove({ _id: req.params.space_id });
-            res.json('Space deleted');
+            res.json({msg: 'Space deleted'});
         } else {
-            return res.status(400).send({error: 'Admin access required to delete space'});
+            return res.status(401).send({error: 'Admin access is required to delete a space'});
         }
 
     } catch (err) {
         // Handle if space not found 
         if(err.kind == "ObjectId"){
-            res.status(400).send('Space not found');
+            res.status(404).send({error: 'Space not found'});
         }
         console.error(err.message);
-        res.json(500).send('Server Error');
+        res.json(500).send({error: 'Server Error'});
     }
 });
 
@@ -172,7 +172,7 @@ router.post('/:space_id/admins', [auth, [
         const space = await Space.findOne({ _id: req.params.space_id });
 
         if(!space){
-            return res.status(400).send({ error: 'Space not found'});
+            return res.status(404).send({ error: 'Space not found'});
         }
 
         // Check if user has admin access 
@@ -180,7 +180,7 @@ router.post('/:space_id/admins', [auth, [
             const newAdmin = await User.findOne({ email });
             
             if(!newAdmin){
-                return res.status(400).send({ error: 'User not found'})
+                return res.status(404).send({ error: 'User not found'})
             }
 
             if(!space.admins.includes(newAdmin._id)){
@@ -194,17 +194,17 @@ router.post('/:space_id/admins', [auth, [
             }
 
             await space.save();
-            res.json(space);
+            res.json({msg: 'Admin added to space'});
         } else {
-            res.status(400).send({ error: 'Admin access is required to add a moderator to this space'});
+            res.status(401).send({ error: 'Admin access is required to add a moderator to this space'});
         }
     } catch (err){
         // Handle if space not found 
         if(err.kind == 'ObjectId'){
-            return res.status(400).send({ error: 'Space not found'});
+            return res.status(404).send({ error: 'Space not found'});
         }
         res.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 });
 
@@ -227,14 +227,14 @@ router.post('/:space_id/admins/delete', [auth, [
         const space = await Space.findOne({ _id: req.params.space_id }); 
 
         if(!space){
-            return res.status(400).send({ error: 'Space not found'});
+            return res.status(404).send({ error: 'Space not found'});
         }
 
         if(user.admin || space.admins.includes(user._id)){
             const spaceAdmin = await User.findOne({ email }); 
 
             if(!spaceAdmin){
-                return res.status(400).send({ error: 'User not found'});
+                return res.status(404).send({ error: 'User not found'});
             }
 
             if(!space.admins.includes(spaceAdmin._id)){
@@ -245,18 +245,18 @@ router.post('/:space_id/admins/delete', [auth, [
             space.admins.splice(adminIndex, 1);
 
             await space.save();
-            res.json(space);
+            res.json({msg: 'Admin removed from space'});
         } else {
-            res.status(400).send({ error: 'Admin access is required to delete an admin'});
+            res.status(401).send({ error: 'Admin access is required to delete an admin'});
         }
 
     } catch (err) {
         // Handle if space isn't found 
         if(err.kind == 'ObjectId'){
-            return res.status(400).send({ error: 'Space not found'}); 
+            return res.status(404).send({ error: 'Space not found'}); 
         }
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 });
 // @route   POST /spaces/:space_id/moderators
@@ -278,7 +278,7 @@ router.post('/:space_id/moderators', [auth, [
         const space = await Space.findOne({ _id: req.params.space_id });
 
         if(!space){
-            return res.status(400).send({ error: 'Space not found'});
+            return res.status(404).send({ error: 'Space not found'});
         }
 
         // Check if user has admin access 
@@ -286,7 +286,7 @@ router.post('/:space_id/moderators', [auth, [
             const newMod  = await User.findOne({ email }); 
 
             if(!newMod){
-                return res.status(400).send({ error: 'User not found'});
+                return res.status(404).send({ error: 'User not found'});
             }
             
             if(!space.moderators.includes(newMod._id)){
@@ -300,17 +300,17 @@ router.post('/:space_id/moderators', [auth, [
             }
 
             await space.save();
-            res.json(space);
+            res.json({msg: 'Moderator added to space'});
         } else {
-            res.status(400).send({ error: 'Admin access is required to add a moderator to this space'});
+            res.status(401).send({ error: 'Admin access is required to add a moderator to this space'});
         }
         
     } catch (err){
         if(err.kind == 'ObjectId'){ // Handle if space isn't found
-            return res.status(400).send({ error: 'Space not found'});
+            return res.status(404).send({ error: 'Space not found'});
         }
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 });
 
@@ -333,14 +333,14 @@ router.post('/:space_id/moderators/delete', [auth, [
         const space = await Space.findOne({ _id: req.params.space_id});
 
         if(!space){
-            return res.status(400).send({ error: 'Space not found'});
+            return res.status(404).send({ error: 'Space not found'});
         }
 
         if(user.admin || space.admins.includes(req.user.id)){
             const moderator = await User.findOne({ email }); 
 
             if(!moderator){
-                return res.status(400).send({ error: 'User not found'}); 
+                return res.status(404).send({ error: 'User not found'}); 
             }
             
             if(!space.moderators.includes(moderator._id)){
@@ -351,16 +351,16 @@ router.post('/:space_id/moderators/delete', [auth, [
             space.moderators.splice(modIndex, 1);
 
             await space.save(); 
-            res.json(space);
+            res.json({msg: 'Moderator removed from space'});
         } else {
-            res.status(400).send({ error: 'Admin access is required to delete a moderator'});
+            res.status(401).send({ error: 'Admin access is required to delete a moderator'});
         }
     } catch (err){
         if( err.kind == "ObjectId"){
-            return res.status(400).send({ error: 'Space not found'});
+            return res.status(404).send({ error: 'Space not found'});
         }
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 });
 
@@ -376,19 +376,19 @@ router.delete('/:space_id/questions/:question_id/comments/:comment_id', auth, as
         let comment = await Comment.findOne({ _id: req.params.comment_id });
 
         if(!space){
-            return res.status(400).send({ error: 'Space not found'})
+            return res.status(404).send({ error: 'Space not found'})
         }
 
         if(!question) {
-            return res.status(400).send({ error : 'Question not found'});
+            return res.status(404).send({ error : 'Question not found'});
         }
         
         if(!comment){
-            return res.status(400).send({ error: 'Comment not found'});
+            return res.status(404).send({ error: 'Comment not found'});
         }
 
         if(!question.comments.includes(comment._id)){
-            return res.status(400).send('This comment does not belong to the given question. Check browser URL.');
+            return res.status(400).send({error: 'This comment does not belong to the given question. Check browser URL.'});
         }
 
         if(req.user.id == comment.creator || space.admins.includes(req.user.id) || space.moderators.includes(req.user.id) || user.admin){
@@ -398,18 +398,18 @@ router.delete('/:space_id/questions/:question_id/comments/:comment_id', auth, as
             await Comment.findOneAndRemove({ _id: req.params.comment_id });
             await question.save();
     
-            res.json('Comment deleted');
+            res.json({msg: 'Comment deleted'});
         } else {
-            res.status(400).send('Comment delete access unauthorized');
+            res.status(401).send({error: 'Comment delete access unauthorized'});
         }
         
     } catch (err) {
         if(err.kind == "ObjectId"){
-            return res.status(400).send({ error: "Comment not found"});
+            return res.status(404).send({ error: "Comment not found"});
         }
 
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error:'Server Error'});
     }
 });
 
@@ -423,7 +423,7 @@ router.delete('/:space_id/answers/:answer_id/comments/:comment_id', auth, async 
         const space = await Space.findOne({ _id: req.params.space_id }); 
 
         if(!space){
-            return res.status(400).send({ error: 'Space not found'});
+            return res.status(404).send({ error: 'Space not found'});
         }
         
         if(user.admin || space.admins.includes(user._id) || space.moderators.includes(user._id) || user._id == comment.creator){
@@ -431,26 +431,34 @@ router.delete('/:space_id/answers/:answer_id/comments/:comment_id', auth, async 
                 const answer = await Answer.findOne({ _id: req.params.answer_id }); 
                 let comment = await Comment.findOne({ _id: req.params.comment_id });
 
+                if(!answer){
+                    return res.status(404).send({ error: 'Answer not found'}); 
+                }
+
+                if(!comment){
+                    return res.status(404).send({ error: 'Comment not found'}); 
+                }
+
                 const commentIdx = answer.comments.indexOf(comment._id); 
                 answer.comments.splice(commentIdx, 1); 
 
                 await Comment.findOneAndRemove({ _id: req.params.comment_id}); 
                 await answer.save();
 
-                res.json(answer);
+                res.json({msg: 'Comment deleted'});
             } catch (err){
-                res.status(400).send({ error: 'Answer and/or comment not found.'}); 
+                res.status(404).send({ error: 'Answer and/or comment not found.'}); 
             }
         } else {
-            res.status(400).send({ error: 'Comment delete access unauthorized'}); 
+            res.status(401).send({ error: 'Comment delete access unauthorized'}); 
         }
 
     } catch (err){
         if(err.kind == 'ObjectId'){
-            return res.status(400).send({ error: 'Space not found'}); 
+            return res.status(404).send({ error: 'Space not found'}); 
         }
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 }); 
 

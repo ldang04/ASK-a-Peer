@@ -34,7 +34,7 @@ router.post('/:space_id/questions', [auth, [
         const user = await User.findOne({ _id: req.user.id });
 
         if(!space){
-            return res.status(400).send({ error: 'Space not found'});
+            return res.status(404).send({ error: 'Space not found'});
         }
 
         const questionFields = {}; 
@@ -53,12 +53,12 @@ router.post('/:space_id/questions', [auth, [
         space.questions.push(question); 
         await space.save();
 
-        res.json('Question posted');
+        res.json({msg: 'Question posted'});
     } catch(err) {
         // Handle if space isn't found
-        if (err.kind == 'ObjectId') return res.status(400).send({ error: 'Space not found '});
+        if (err.kind == 'ObjectId') return res.status(404).send({ error: 'Space not found '});
         console.error(err.message);
-        res.json(500).send('Server Error');
+        res.json(500).send({error: 'Server Error'});
     }
 }); 
 
@@ -71,12 +71,12 @@ router.post('/:space_id/questions/:question_id', auth, async (req,res) => {
         let question = await Question.findOne({ _id: req.params.question_id });
         
         if(!question){
-            return res.status(400).send({ error: 'Question not found'}); 
+            return res.status(404).send({ error: 'Question not found'}); 
         }
 
         // Check if user has access to edit question 
         if ( req.user.id != question.creator ){
-            res.status(400).send({error: 'Edit access unauthorized'});
+            return res.status(401).send({error: 'Edit access unauthorized'});
         }
 
         // Update question
@@ -91,15 +91,15 @@ router.post('/:space_id/questions/:question_id', auth, async (req,res) => {
         ); 
 
         await question.save();
-        res.json(question);
+        res.json({msg: 'Question updated'});
 
     } catch(err) {
         // handle if question is not found
         if(err.kind == 'ObjectId'){
-            return res.status(400).send({error: 'Question not found'});
+            return res.status(404).send({error: 'Question not found'});
         }
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 });
 
@@ -114,7 +114,7 @@ router.post('/:space_id/join', auth, async(req,res) => {
         const space = await Space.findOne({ _id:req.params.space_id });
         
         if(!space){
-            return res.status(400).send({ error: 'Space not found'});
+            return res.status(404).send({ error: 'Space not found'});
         }
         
         // Check if user is already in space
@@ -128,14 +128,14 @@ router.post('/:space_id/join', auth, async(req,res) => {
         await space.save();
         await user.save();
 
-        res.json('Joined space');
+        res.json({msg: 'Joined space'});
     } catch (err){
         // Handle if space isn't found
         if(err.kind == "ObjectId"){
-            return res.status(400).send({ error: 'Space not found '});
+            return res.status(404).send({ error: 'Space not found '});
         }
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 });
 
@@ -167,7 +167,7 @@ router.post('/:space_id/leave', auth, async (req, res) => {
         //Remove user as a moderator of space
         if(space.moderators.includes(req.user.id)){
             if(space.moderators.length == 1){
-                return res.status(400).send({error: 'Space must have at least one moderator; assign another before leaving'})
+                return res.status(400).send({error: 'Space must have at least one moderator; assign another before leaving'}); 
             }
             const modIdIndex = space.moderators.indexOf(req.user.id);
             space.moderators.splice(modIdIndex, 1);
@@ -187,14 +187,14 @@ router.post('/:space_id/leave', auth, async (req, res) => {
         await user.save(); 
         await space.save();
 
-        res.json('Exited space');
+        res.json({msg: 'Exited space'});
     } catch (err){
         // Handle if space isn't found 
         if(err.kind == 'ObjectId'){
-            return res.status(400).send({error: 'Space not found'});
+            return res.status(404).send({error: 'Space not found'});
         }
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 });
 

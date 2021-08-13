@@ -18,7 +18,7 @@ router.post('/:comment_id/vote', auth, async (req, res) => {
         const comment = await Comment.findOne({ _id: req.params.comment_id}); 
 
         if(!comment){
-            return res.status(400).send({ error: 'Comment not found'});
+            return res.status(404).send({ error: 'Comment not found'});
         }
         
         // Check if user has already upvoted comment 
@@ -26,18 +26,18 @@ router.post('/:comment_id/vote', auth, async (req, res) => {
             const userIndex = comment.upvotes.indexOf(user._id); 
             comment.upvotes.splice(userIndex, 1); 
             await comment.save(); 
-            res.json(comment);
+            res.json({msg: 'Comment downvoted'});
         } else { // if hasn't upvoted, upvote
             comment.upvotes.push(user._id); 
             await comment.save(); 
-            res.json(comment);
+            res.json({msg: 'Comment upvoted'});
         }
     } catch (err){
         if(err.kind == 'ObjectId'){
-            return res.status(400).send({ error: 'Comment not found '}); 
+            return res.status(404).send({ error: 'Comment not found '}); 
         }
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send({error: 'Server Error'});
     }
 }); 
 
