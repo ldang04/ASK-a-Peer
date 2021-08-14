@@ -1,0 +1,47 @@
+/* Color Scheme: 
+Andover blue: #00319C
+Light selection blue: #6292FA
+Light gray: #F2F2F2
+White: white
+Dark green (border): #009432
+Light green (fill): #F2FFEF
+White component border gray: #CCCCCC 
+
+default font-size: 10px (1rem)
+
+(everything divided by 1.5 from Adobe XD plan)
+ASK-a-Peer large font: 30
+Large font (general): 22.7
+Medium/Small font: 16.7
+Login/Register page fonts
+ASC-a-Peer title font: 56
+Login font: 23
+Else: 16.7
+
+*/
+
+/* Navbar */
+html {
+    font-size: 62.5%;
+}
+
+.navbar {
+    width: 100%;
+    background-color: #00319C;
+    padding: 0.5rem 2rem 0.5rem 2rem;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500; 
+}
+
+.navbar .navbar-brand {
+    font-size: 3rem;
+    color: white;
+    margin-right: 0.3rem;
+}
+
+.navbar-collapse .nav-link {
+    font-size: 1.67rem;
+    color: white;
+    font-weight: 400;
+    margin-top: 0.25rem;
+}
