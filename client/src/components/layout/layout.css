@@ -43,5 +43,19 @@ html {
     font-size: 1.67rem;
     color: white;
     font-weight: 400;
-    margin-top: 0.25rem;
+    /* margin-top: 0.25rem; */
+}
+
+.navbar-toggler:focus, .navbar-toggler:active {
+    outline: none;
+    box-shadow: none;
+}
+
+.toggle-icon {
+    color: white;
+    font-size: 2rem;
+}
+
+.to-right{
+    justify-content:flex-end;
 }
