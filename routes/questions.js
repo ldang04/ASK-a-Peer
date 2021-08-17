@@ -65,6 +65,12 @@ router.get('/', [], async (req, res) => {
     }
 });
 
+// @todo
+// @route   GET /questions/user 
+// @desc   Get questions that belong to spaces that a user is part of. 
+// @access  Private 
+
+
 // @route   GET /questions/:question_id
 // @desc    Get question by question id 
 // @access  Public

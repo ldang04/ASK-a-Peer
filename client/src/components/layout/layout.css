@@ -43,7 +43,23 @@ html {
     font-size: 1.67rem;
     color: white;
     font-weight: 400;
-    /* margin-top: 0.25rem; */
+    /* background-color: red; */
+}
+
+
+#resourcesNav {
+    padding-left: 0;
+}
+
+#resourcesNav:hover{
+    cursor: pointer;
+}
+
+#separation-bar {
+    font-size: 1.67rem;
+    color: white;
+    font-weight: 400;
+    padding-right: 0.5rem;
 }
 
 .navbar-toggler:focus, .navbar-toggler:active {
