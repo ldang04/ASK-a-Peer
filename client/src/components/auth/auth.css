@@ -2,6 +2,7 @@
 Andover blue: #00319C
 Light selection blue: #6292FA
 Light gray: #F2F2F2
+Gray: #6c757d
 White: white
 Dark green (border): #009432
 Light green (fill): #F2FFEF
@@ -31,12 +32,13 @@ Else: 16.7
 }
 
 .card {
+    padding: 0;
     height: 55rem;
     border-radius: 2.5rem;
 }
+
 .auth-card {
     overflow: hidden;
-    background-color: white;
     border-radius: 2.5rem;
     margin: 0; 
     position: absolute; 
@@ -53,19 +55,24 @@ Else: 16.7
     overflow: hidden;
 }
 
-.form-container {
-    padding: 4rem;
-    border-radius: 2.5rem;
+.form-col {
+    display: table;
 }
 
-.auth-title-login {
-    font-size: 2.5rem;
-    font-family: 'Ubuntu'; 
-    font-weight: 400;
-    color: #00319C;
+.form-middle {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.form-container {
+    padding: 3rem;
+    border-radius: 2.5rem;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .auth-title {
+    margin-bottom: 4rem;
     text-align: center;
     font-family: 'Ubuntu'; 
     font-size: 5em;
@@ -73,3 +80,52 @@ Else: 16.7
     color: #00319C;
 }
 
+.form-control {
+    padding: 1.25rem;
+    border-radius: 0.5rem;
+}
+
+.form-control::placeholder {
+    font-family: 'Ubuntu'; 
+    font-weight: 300;
+    font-size: 1.3rem;
+    color: #6c757d;
+}
+
+.form-text {
+    font-family: 'Ubuntu';
+    font-size: 1rem;
+}
+
+.form-div {
+    margin-bottom: 1.8rem;
+}
+
+.form-submit {
+    font-family: 'Ubuntu';
+    font-weight: 500;
+    font-size: 2.3rem;
+    color: white;
+    background-color: #00319C;
+    margin-top: 4rem;
+    border-radius: 3rem;
+    padding: 0.7rem;
+}
+
+.form-subtext {
+    margin-top: 3rem;
+    font-family: 'Ubuntu'; 
+    font-size: 1.67rem;
+    font-weight: 300;
+    color: #00319C;
+    text-align: center;
+}
+
+.form-subtext-link {
+    font-weight: 400;
+    color: #00319C;
+}
+
+.form-subtext a {
+    text-decoration: none;
+}

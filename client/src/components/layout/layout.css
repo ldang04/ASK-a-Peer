@@ -46,11 +46,6 @@ html {
     /* background-color: red; */
 }
 
-
-#resourcesNav {
-    padding-left: 0;
-}
-
 #resourcesNav:hover{
     cursor: pointer;
 }
@@ -59,7 +54,7 @@ html {
     font-size: 1.67rem;
     color: white;
     font-weight: 400;
-    padding-right: 0.5rem;
+    padding-right: 0;
 }
 
 .navbar-toggler:focus, .navbar-toggler:active {

@@ -22,7 +22,6 @@ const Navbar = () => {
                     <a className="nav-link" id="resourcesNav">Resources</a>
                     {/*Search bar*/}
                     {/*Ask a Question Button*/}
-                    
                 </div>
                 <div className="collapse navbar-collapse collapse-nav ml-auto to-right">
                     <Link to="/auth/register" className="nav-link">Register</Link>
