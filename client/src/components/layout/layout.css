@@ -70,3 +70,8 @@ html {
 .to-right{
     justify-content:flex-end;
 }
+
+.alert {
+    padding: 1.25rem;
+    font-family: 'Ubuntu';
+}

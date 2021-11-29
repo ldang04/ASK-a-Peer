@@ -22,19 +22,13 @@ Else: 16.7
 */
 
 
-.login-page, .register-page {
+.login-page, .register-page, .confirmation-page {
     position: relative;
     height: 100vh;
     background-image: url('../../assets/auth-bg.jpg');
     background-position: fixed;
     background-size: cover;
     background-repeat: no-repeat;
-}
-
-.card {
-    padding: 0;
-    height: 55rem;
-    border-radius: 2.5rem;
 }
 
 .auth-card {
@@ -46,40 +40,57 @@ Else: 16.7
     left: 50%;
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
+    min-height: 55rem;
+}
+.content-wrapper {
+    background-color: white;
+    display: flex;
+    border-radius: 2.5rem;
+    align-items: stretch;
 }
 
 .samphil-img {
+    align-self: stretch;
     background-image: url('../../assets/auth-samphil.jpeg');
-    background-position: no-repeat top center;
-    height: 55rem;
-    overflow: hidden;
+    flex: 1;
+    border-bottom-left-radius: 2.5rem;
 }
 
-.form-col {
-    display: table;
-}
-
-.form-middle {
-    display: table-cell;
-    vertical-align: middle;
+.confirm-img {
+    align-self: stretch; 
+    background-image: url('https://bloximages.chicago2.vip.townnews.com/eagletribune.com/content/tncms/assets/v3/editorial/b/9b/b9b72cf6-676f-11e8-a729-9be78a4deee4/5b14548aec82b.image.jpg?resize=1200%2C779');
+    flex: 1;
+    border-bottom-left-radius: 2.5rem;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    height: 43rem;
 }
 
 .form-container {
+    background: white;
     padding: 3rem;
     border-radius: 2.5rem;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .auth-title {
     margin-bottom: 4rem;
     text-align: center;
     font-family: 'Ubuntu'; 
-    font-size: 5em;
+    font-size: 4.5em;
     font-weight: 500;
     color: #00319C;
 }
 
+.auth-text {
+    font-family: 'Ubuntu';
+    font-size: 1.67rem;
+    color: #00319C;
+    margin: 0 auto;
+}
+
+.fa-check-circle {
+    color: green;
+}
 .form-control {
     padding: 1.25rem;
     border-radius: 0.5rem;
@@ -112,6 +123,16 @@ Else: 16.7
     padding: 0.7rem;
 }
 
+.form-submit:focus {
+    font-family: 'Ubuntu';
+    font-weight: 500;
+    font-size: 2.3rem;
+    color: white;
+    background-color: #00319C;
+    margin-top: 4rem;
+    border-radius: 3rem;
+    padding: 0.7rem;
+}
 .form-subtext {
     margin-top: 3rem;
     font-family: 'Ubuntu'; 

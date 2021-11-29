@@ -15,7 +15,7 @@ const UsedToken = require('../models/UsedToken');
 // @access  Public
 
 router.post('/register', [ // validate that required fields are filled. 
-    check('fullName', 'Full name is required')
+    check('fullName', 'Please enter your full name')
     .not()
     .isEmpty(),
     check('email', 'Please enter a valid email')
