@@ -17,14 +17,14 @@ export const register = ({ fullName, email, password }) => async dispatch => {
     const body = JSON.stringify({ fullName, email, password }); 
 
     try {
-        const res = await axios.post('/auth/register', body, config)
+        const res = await axios.post('/auth/register', body, config); 
+        dispatch(setAlert(res.data.msg, 'success')); 
         
-        dispatch({
-            type: REGISTER_SUCCESS, 
-            payload: res.data
-        }, setAlert(res.data.msg, 'success')); 
-
     } catch(err){
+        console.log('from catch');
+        console.log(err.response);
+        
+        // Handle empty fields
         const errors = err.response.data.errors; 
 
         if(errors){
@@ -32,6 +32,11 @@ export const register = ({ fullName, email, password }) => async dispatch => {
                 dispatch(setAlert(error.msg, 'danger'));
             });
             console.log(errors);
+        }
+        // Handle repeat user 
+        const error = err.response.data.error; 
+        if(error){
+            dispatch(setAlert(error, 'danger'));
         }
 
         dispatch({

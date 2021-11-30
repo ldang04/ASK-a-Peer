@@ -25,7 +25,7 @@ router.post('/register', [ // validate that required fields are filled.
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()){ // if errors are present in request
-        return res.status(400).json({ errors: errors.array()}); 
+        return res.status(400).send({ errors: errors.array()}); 
     }
 
     const { fullName, email, password } = req.body;
@@ -35,7 +35,7 @@ router.post('/register', [ // validate that required fields are filled.
         let user = await User.findOne({ email: email });
 
         if(user){
-            return res.status(400).json({ error: 'User already exists'});
+            return res.status(400).send({error: 'User already exists'});
         }
 
         user = new User({
