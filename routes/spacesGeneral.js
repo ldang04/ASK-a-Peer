@@ -31,7 +31,9 @@ router.get('/', async (req, res) => {
 
 router.get('/:space_id', async (req,res) => {
     try {
+        
         await Space.findOne({ _id: req.params.space_id })
+        // TODO: paginate questions, and filter to only questions with answers 
         .populate(
             [
                 {

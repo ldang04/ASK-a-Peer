@@ -1,50 +1,71 @@
 import './auth.css';
-import React from 'react'; 
+import React, { useState } from 'react'; 
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { setAlert } from '../../actions/alert';
+import PropTypes from 'prop-types';
+import { login } from '../../actions/auth';
 
-const Login = () => {
+import Alert from '../layout/Alert';
+ 
+const Login = ({ alerts, login }) => {
+   
+    const [formData, setFormData] = useState({
+        email: '', 
+        password: ''
+    }); 
+
+    const { email, password } = formData; 
+
+    const onInputChange = e => setFormData({...formData, [e.target.name]: e.target.value}); 
+
+    const onFormSubmit = e => {
+        e.preventDefault();
+        login(email, password);
+    }
+
     return (
         <div className="login-page">
             <div className="container">
                 <div className="row">
-                        <div className="col-8 auth-card">
-                            <div className="card border-0">
-                                <div className="row align-items-center">
+                        <div className="col-8 auth-card p-0">
+                                <div className="content-wrapper align-items-center">
                                     <div className="d-none d-lg-inline-flex col-lg-6 samphil-img">
+                    
                                     </div>
                                     <div className="col-12 col-lg-6">
                                          <div className="form-container">
                                             <h1 className="auth-title">ASK-a-Peer</h1>
-                                                <form>
+                                                <Alert />
+                                                <form onSubmit={onFormSubmit}>
                                                     <div className="form-div">
                                                         <input 
                                                             type="email" 
                                                             name="email" 
-                                                            value="email" 
+                                                            value={email}
                                                             className="form-control" 
                                                             placeholder="Email" 
-                                                            required
-                                                        />
+                                                            onChange={e => onInputChange(e)} />
                                                     </div>
-                                                    <div className="form-div">
+                                                    <div className="form-div-mod">
                                                         <input 
                                                             type="password" 
                                                             name="password" 
-                                                            value="password" 
+                                                            value={password}
                                                             className="form-control" 
                                                             placeholder="Password" 
-                                                            required
-                                                            />
+                                                            onChange={e => onInputChange(e)} />
                                                     </div>
+                                                    {/* TODO: Complete password reset */}
+                                                    <div className="form-text mb-4"><Link to="/auth/register">Forgot your password?</Link></div> 
                                                     <div className="form-div">
-                                                        <button type="submit" className="form-control form-submit">L O G I N</button>
+                                                        <button type="submit" className="form-control auth-button">L O G I N</button>
                                                     </div>
                                                     </form>
                                                     <p className="form-subtext"> Don't have an account? <Link to="/auth/register"><span className="form-subtext-link">Register</span></Link></p>
                                             </div>
                                     </div>
                                 </div>
-                            </div>
                         </div>
                 </div>
            </div>
@@ -52,4 +73,11 @@ const Login = () => {
     )
 }
 
-export default Login; 
+const mapStateToProps = state => ({
+    alerts: state.alert
+});
+
+Login.propTypes = {
+    login: PropTypes.func.isRequired
+}
+export default connect(null, { login, setAlert, mapStateToProps })(Login);

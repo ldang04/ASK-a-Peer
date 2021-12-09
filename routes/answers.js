@@ -23,6 +23,10 @@ router.get('/', async (req, res) => {
         res.status(500).send({error: 'Server Error'});
     }
 });
+// TODO
+// @route   GET /answers/TBD
+// @desc   Get an answer by name 
+// @access  Private (creator access)
 
 // @route   GET /answers/:answer_id
 // @desc    Get answer by answer id 
@@ -64,7 +68,7 @@ router.get('/:answer_id', async (req, res) => {
 });
 
 // @route   POST /answers/:answer_id
-// @desc    Edit an answer
+// @desc    Edit an answer 
 // @access  Private (creator access)
 
 router.post('/:answer_id', auth, async(req, res) => {

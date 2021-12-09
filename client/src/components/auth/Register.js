@@ -5,11 +5,11 @@ import { Link } from 'react-router-dom';
 import { setAlert } from '../../actions/alert';
 import { register } from '../../actions/auth';
 import PropTypes from 'prop-types';
-import image from '../../assets/auth-samphil.jpeg';
 
 import Alert from '../layout/Alert';
  
-const Register = ({ setAlert, register}) => {
+const Register = ({register, alerts}) => {
+   
     const [formData, setFormData] = useState({
         fullName: '', 
         email: '', 
@@ -24,7 +24,7 @@ const Register = ({ setAlert, register}) => {
         e.preventDefault();
         const body = {fullName, email, password}; 
         try {
-            register({ fullName, email, password});
+            register(body);
         } catch(err){
             console.log(err);
         }
@@ -43,7 +43,7 @@ const Register = ({ setAlert, register}) => {
                                          <div className="form-container">
                                             <h1 className="auth-title">ASK-a-Peer</h1>
                                                 <Alert />
-                                                <form onSubmit={e => onFormSubmit(e)}>
+                                                <form onSubmit={e => onFormSubmit(e)} autocomplete="off">
                                                     <div className="form-div">
                                                         <input 
                                                             type="text" 
@@ -51,7 +51,9 @@ const Register = ({ setAlert, register}) => {
                                                             value={fullName} 
                                                             className="form-control" 
                                                             placeholder="Full Name" 
-                                                            onChange={e => onInputChange(e)} />
+                                                            onChange={e => onInputChange(e)} 
+                                                            autocomplete="false"
+                                                            />
                                                     </div>
                                                     <div className="form-div">
                                                         <input 
@@ -60,7 +62,9 @@ const Register = ({ setAlert, register}) => {
                                                             value={email}
                                                             className="form-control" 
                                                             placeholder="Email" 
-                                                            onChange={e => onInputChange(e)} />
+                                                            onChange={e => onInputChange(e)}
+                                                            autocomplete="false"
+                                                             />
                                                         <div className="form-text">Please enter a valid email ending in @andover.edu</div>
                                                     </div>
                                                     <div className="form-div">
@@ -70,10 +74,11 @@ const Register = ({ setAlert, register}) => {
                                                             value={password}
                                                             className="form-control" 
                                                             placeholder="Password" 
-                                                            onChange={e => onInputChange(e)} />
+                                                            onChange={e => onInputChange(e)} 
+                                                            autocomplete="false"/>
                                                     </div>
                                                     <div className="form-div">
-                                                        <button type="submit" className="form-control form-submit">R E G I S T E R</button>
+                                                        <button type="submit" className="form-control auth-button">R E G I S T E R</button>
                                                     </div>
                                                     </form>
                                                     <p className="form-subtext"> Already have an account? <Link to="/auth/login"><span className="form-subtext-link">Login</span></Link></p>
@@ -92,4 +97,8 @@ Register.propTypes = {
     register: PropTypes.func.isRequired
 }
 
-export default connect(null, { setAlert, register })(Register);
+const mapStateToProps = state => ({
+    alerts: state.alert
+});
+
+export default connect(null, { setAlert, register, mapStateToProps })(Register);

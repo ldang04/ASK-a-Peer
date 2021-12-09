@@ -52,7 +52,6 @@ Else: 16.7
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     padding: 0;
-    min-height: 55rem;
 }
 .content-wrapper {
     background-color: white;
@@ -114,7 +113,22 @@ Else: 16.7
     margin-bottom: 1.8rem;
 }
 
-.form-submit {
+.form-div-mod {
+    margin-bottom: 1rem;
+}
+
+.auth-button {
+    font-family: 'Ubuntu';
+    font-weight: 500;
+    font-size: 2.3rem;
+    color: white;
+    background-color: #00319C;
+    border-radius: 3rem;
+    padding: 0.7rem;
+    text-decoration: none;
+}
+
+.auth-button:focus {
     font-family: 'Ubuntu';
     font-weight: 500;
     font-size: 2.3rem;
@@ -125,18 +139,11 @@ Else: 16.7
     padding: 0.7rem;
 }
 
-.form-submit:focus {
-    font-family: 'Ubuntu';
-    font-weight: 500;
-    font-size: 2.3rem;
-    color: white;
-    background-color: #00319C;
-    margin-top: 4rem;
-    border-radius: 3rem;
-    padding: 0.7rem;
+.confirm-button {
+    padding: 1rem;
 }
+
 .form-subtext {
-    margin-top: 3rem;
     font-family: 'Ubuntu'; 
     font-size: 1.67rem;
     font-weight: 300;

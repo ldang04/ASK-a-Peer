@@ -9,10 +9,10 @@ const Navbar = () => {
         setToggled(!toggled);
     };
 
-    const handleResourcesInteraction = () => {
-        // @todo: show dropdown menu for resources on hover/click. 
-        console.log('resources interaction detected');
-    }
+    // const handleResourcesInteraction = () => {
+    //     // @todo: show dropdown menu for resources on hover/click. 
+    //     console.log('resources interaction detected');
+    // }
 
     return (
         <div className="navbar navbar-expand-md d-flex">
@@ -24,7 +24,7 @@ const Navbar = () => {
                 </button>
                 <a className="nav-link d-none d-md-inline-block" id="separation-bar">| </a>
                 <div className="collapse navbar-collapse collapse-nav">
-                    <a onMouseOver={handleResourcesInteraction} href={handleResourcesInteraction} className="nav-link" id="resourcesNav">Resources</a>
+                    {/* <a onMouseOver={handleResourcesInteraction} href={handleResourcesInteraction} className="nav-link" id="resourcesNav">Resources</a> */}
                     {/*Search bar*/}
                     {/*Ask a Question Button*/}
                 </div>

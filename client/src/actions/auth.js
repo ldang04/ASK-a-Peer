@@ -2,9 +2,32 @@ import axios from 'axios';
 import { setAlert } from './alert';
 
 import {
-    REGISTER_SUCCESS, 
-    REGISTER_FAIL
+    REGISTER_FAIL, 
+    LOGIN_SUCCESS,
+    LOGIN_FAIL, 
+    USER_LOADED, 
+    AUTH_ERROR
 } from './types'; 
+
+import setAuthToken from '../utils/setAuthToken';
+export const loadUser = () => async dispatch => {
+    // Check to see if token and put in global header.
+    if(localStorage.token){
+        setAuthToken(localStorage.token);
+    }
+
+    try {
+        const res = await axios.get('/me');
+        dispatch({
+            type: USER_LOADED, 
+            payload: res.data
+        });
+    } catch (err) {
+        dispatch({
+            type: AUTH_ERROR
+        })
+    }
+}
 
 // Register User
 export const register = ({ fullName, email, password }) => async dispatch => {
@@ -13,34 +36,77 @@ export const register = ({ fullName, email, password }) => async dispatch => {
             'Content-Type': 'application/json'
         }
     }
+    // Validate Andover Email 
+    const domain = email.split('@')[1]; 
+    if(domain.replace(/\s/g, "") !== 'andover.edu'){
+        dispatch(setAlert('Please enter an email ending with @andover.edu', 'danger'));
+    } else {
+        const body = JSON.stringify({ fullName, email, password });
 
-    const body = JSON.stringify({ fullName, email, password }); 
+        try {
+            const res = await axios.post('/auth/register', body, config); 
+            dispatch(setAlert(res.data.msg, 'success')); 
+        } catch(err){
+            // Handle empty fields
+            const errors = err.response.data.errors; 
 
-    try {
-        const res = await axios.post('/auth/register', body, config); 
-        dispatch(setAlert(res.data.msg, 'success')); 
-        
-    } catch(err){
-        console.log('from catch');
-        console.log(err.response);
-        
-        // Handle empty fields
-        const errors = err.response.data.errors; 
+            if(errors){
+                errors.forEach(error => {
+                    dispatch(setAlert(error.msg, 'danger'));
+                });
+                console.log(errors);
+            }
+            // Handle repeat user 
+            const error = err.response.data.error; 
+            if(error){
+                dispatch(setAlert(error, 'danger'));
+            }
 
-        if(errors){
-            errors.forEach(error => {
-                dispatch(setAlert(error.msg, 'danger'));
+            dispatch({
+                type: REGISTER_FAIL
             });
-            console.log(errors);
         }
-        // Handle repeat user 
-        const error = err.response.data.error; 
-        if(error){
-            dispatch(setAlert(error, 'danger'));
-        }
-
-        dispatch({
-            type: REGISTER_FAIL
-        });
     }
+
+}
+
+// Login User
+export const login = ( email, password ) => async dispatch => {
+    const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+        const body = JSON.stringify({ email, password });
+
+        try {
+            const res = await axios.post('/auth/login', body, config); 
+            dispatch(setAlert(res.data.msg, 'success')); 
+            dispatch({
+                type: LOGIN_SUCCESS, 
+                payload: res.data
+            });
+        } catch(err){
+            // Handle empty fields
+            const errors = err.response.data.errors; 
+
+            if(errors){
+                errors.forEach(error => {
+                    dispatch(setAlert(error.msg, 'danger'));
+                });
+                console.log(errors);
+            }
+            // Handle repeat user 
+            const error = err.response.data.error; 
+            if(error){
+                dispatch(setAlert(error, 'danger'));
+            }
+
+            dispatch({
+                type: LOGIN_FAIL
+            });
+
+            dispatch(setAlert('Login failed', 'danger'));
+    }
+
 }
