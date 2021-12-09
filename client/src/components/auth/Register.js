@@ -43,7 +43,7 @@ const Register = ({register, alerts}) => {
                                          <div className="form-container">
                                             <h1 className="auth-title">ASK-a-Peer</h1>
                                                 <Alert />
-                                                <form onSubmit={e => onFormSubmit(e)} autocomplete="off">
+                                                <form onSubmit={e => onFormSubmit(e)} autoComplete="off">
                                                     <div className="form-div">
                                                         <input 
                                                             type="text" 
@@ -52,8 +52,7 @@ const Register = ({register, alerts}) => {
                                                             className="form-control" 
                                                             placeholder="Full Name" 
                                                             onChange={e => onInputChange(e)} 
-                                                            autocomplete="false"
-                                                            />
+                                                            autoComplete="false"/>
                                                     </div>
                                                     <div className="form-div">
                                                         <input 
@@ -62,9 +61,7 @@ const Register = ({register, alerts}) => {
                                                             value={email}
                                                             className="form-control" 
                                                             placeholder="Email" 
-                                                            onChange={e => onInputChange(e)}
-                                                            autocomplete="false"
-                                                             />
+                                                            onChange={e => onInputChange(e)} />
                                                         <div className="form-text">Please enter a valid email ending in @andover.edu</div>
                                                     </div>
                                                     <div className="form-div">
@@ -74,8 +71,7 @@ const Register = ({register, alerts}) => {
                                                             value={password}
                                                             className="form-control" 
                                                             placeholder="Password" 
-                                                            onChange={e => onInputChange(e)} 
-                                                            autocomplete="false"/>
+                                                            onChange={e => onInputChange(e)}/>
                                                     </div>
                                                     <div className="form-div">
                                                         <button type="submit" className="form-control auth-button">R E G I S T E R</button>
@@ -95,7 +91,7 @@ const Register = ({register, alerts}) => {
 Register.propTypes = {
     setAlert: PropTypes.func.isRequired, 
     register: PropTypes.func.isRequired
-}
+} 
 
 const mapStateToProps = state => ({
     alerts: state.alert

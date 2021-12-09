@@ -122,7 +122,6 @@ router.get('/confirmation/:token', async (req, res) => {
         console.error(err.message);
         res.status(500).send({error: 'Server error'});
     }
-    return res.redirect('/auth/login');
 }); 
 
 // @route   POST /auth/resend
@@ -147,7 +146,6 @@ router.post('/resend', [
 
         if(user.emailVerified){
             res.send('User email address has already been confirmed'); 
-            return res.redirect('/auth/login'); 
         }
 
         const payload = {
@@ -352,7 +350,7 @@ router.post('/login', [ // validate that required fields are filled.
 
         // See if user is confirmed 
         if(!user.emailVerified){
-            return res.status(400).send({ error: 'User email has not been verified. Check inbox for email confirmation link and follow steps to login.'}); 
+            return res.status(400).send({ error: 'This email has not been verified. Check your inbox for a confirmation email and follow its instructions'}); 
         }
 
         // See if password matches

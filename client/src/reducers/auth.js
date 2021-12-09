@@ -17,6 +17,7 @@ const initialState = {
 
 export default function (state = initialState, action) {
     const { type, payload } = action; 
+    console.log(action);
     switch(type) {
         case USER_LOADED: 
         return {
@@ -26,7 +27,7 @@ export default function (state = initialState, action) {
             user: payload
         }
         case LOGIN_SUCCESS: 
-            localStorage.setItem('token', payload.token);
+            localStorage.setItem('token', payload);
             return {
                 ... state, 
                 ... payload, 
@@ -36,7 +37,7 @@ export default function (state = initialState, action) {
         case REGISTER_FAIL: 
         case AUTH_ERROR:
         case LOGIN_FAIL: 
-            localStorange.removeItem('token'); 
+            localStorage.removeItem('token'); 
             return {
                 ... state, 
                 token: null, 

@@ -17,7 +17,9 @@ const Space = require('../models/Space');
 // @desc    Get current user
 // @access  Private
 router.get('/me', auth, async (req, res) => {
+    console.log('hit');
     try {
+        console.log(req);
         const user = await User.findOne({ _id: req.user.id }).select('-password');
 
         // Build response object 
@@ -75,6 +77,7 @@ router.get('/me', auth, async (req, res) => {
     )
     .exec()
     .then( questions => {
+        console.log('then');
         if(!questions){
             return res.status(400).send({ error: 'Something went wrong. No questions can be found at this time.'}); 
         }
@@ -100,10 +103,11 @@ router.get('/me', auth, async (req, res) => {
         }
         response.answers = answers;
     });
-    
+    console.log('response');
     res.json(response);
 
     } catch (err) {
+        console.log('catch')
         console.error(err.message);
         res.status(500).send({error: 'Server Error'});
     }
