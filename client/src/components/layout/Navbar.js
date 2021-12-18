@@ -16,8 +16,8 @@ const Navbar = ({ auth: { isAuthenticated, loading }, removeHeader, logout }) =>
     )
     const guestLinks = (
         <div className="collapse navbar-collapse collapse-nav ml-auto to-right">
-                    <Link to="/auth/register" className="nav-link">Register</Link>
-                    <Link to="/auth/login" className="nav-link">Login</Link>
+                    <Link to="/register" className="nav-link">Register</Link>
+                    <Link to="/login" className="nav-link">Login</Link>
                 </div>
     )
 
@@ -32,6 +32,7 @@ const Navbar = ({ auth: { isAuthenticated, loading }, removeHeader, logout }) =>
             <Fragment />
         )
     }
+
     return (
         <div className="navbar navbar-expand-md d-flex">
             <div className="container-fluid">
