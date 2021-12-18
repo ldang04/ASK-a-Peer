@@ -1,15 +1,20 @@
 import './auth.css';
-import React, { useState } from 'react'; 
+import React, { useState, useEffect } from 'react'; 
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { setAlert } from '../../actions/alert';
 import { register } from '../../actions/auth';
+import { removeHeader } from '../../actions/header';
 import PropTypes from 'prop-types';
 
 import Alert from '../layout/Alert';
  
-const Register = ({register, alerts}) => {
-   
+const Register = ({register, removeHeader, isAuthenticated}) => {
+
+    useEffect(() => {
+        removeHeader();
+    }, []);
+
     const [formData, setFormData] = useState({
         fullName: '', 
         email: '', 
@@ -28,6 +33,11 @@ const Register = ({register, alerts}) => {
         } catch(err){
             console.log(err);
         }
+    }
+
+     // Redirect if logged in 
+     if(isAuthenticated){
+        return <Redirect to="/main" />
     }
 
     return (
@@ -94,7 +104,8 @@ Register.propTypes = {
 } 
 
 const mapStateToProps = state => ({
-    alerts: state.alert
+    alerts: state.alert, 
+    isAuthenticated: state.auth.isAuthenticated
 });
 
-export default connect(null, { setAlert, register, mapStateToProps })(Register);
+export default connect(null, { setAlert, register, removeHeader, mapStateToProps })(Register);

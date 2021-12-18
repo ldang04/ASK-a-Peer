@@ -31,6 +31,7 @@ html {
     padding: 0.5rem 2rem 0.5rem 2rem;
     font-family: 'Ubuntu', sans-serif;
     font-weight: 500; 
+    z-index: 1000;
 }
 
 .navbar .navbar-brand {
@@ -74,4 +75,8 @@ html {
 .alert {
     padding: 1.25rem;
     font-family: 'Ubuntu';
+}
+
+.logout-link {
+    display: inline-block;
 }

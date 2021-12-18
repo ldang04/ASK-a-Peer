@@ -6,7 +6,8 @@ import {
     LOGIN_SUCCESS,
     LOGIN_FAIL, 
     USER_LOADED, 
-    AUTH_ERROR
+    AUTH_ERROR, 
+    LOGOUT, 
 } from './types'; 
 
 import setAuthToken from '../utils/setAuthToken';
@@ -38,11 +39,13 @@ export const register = ({ fullName, email, password }) => async dispatch => {
         }
     }
     // Validate Andover Email 
-    const domain = email.split('@')[1]; 
-    if(domain.replace(/\s/g, "") !== 'andover.edu'){
-        dispatch(setAlert('Please enter an email ending with @andover.edu', 'danger'));
-    } else {
-        const body = JSON.stringify({ fullName, email, password });
+    if(email){
+        const domain = email.split('@')[1]; 
+        if(domain.replace(/\s/g, "") !== 'andover.edu'){
+        return dispatch(setAlert('Please enter an email ending with @andover.edu', 'danger'));
+    } 
+    }
+      const body = JSON.stringify({ fullName, email, password });
 
         try {
             const res = await axios.post('/auth/register', body, config); 
@@ -67,7 +70,6 @@ export const register = ({ fullName, email, password }) => async dispatch => {
             dispatch({
                 type: REGISTER_FAIL
             });
-        }
     }
 
 }
@@ -109,4 +111,11 @@ export const login = ( email, password ) => async dispatch => {
             });
     }
 
+}; 
+
+// Logout action / clear profile
+
+export const logout = () => dispatch => {
+    dispatch({ type: LOGOUT }); 
 }
+

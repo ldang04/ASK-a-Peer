@@ -1,19 +1,37 @@
 import './layout.css';
-import React, {useState} from 'react'; 
-import { Link } from 'react-router-dom'
+import React, {useState, Fragment, useEffect} from 'react'; 
+import { Link } from 'react-router-dom'; 
+import { connect  } from 'react-redux';
+import PropTypes from 'prop-types';
+import { logout } from '../../actions/auth'; 
 
-const Navbar = () => {
+const Navbar = ({ auth: { isAuthenticated, loading }, removeHeader, logout }) => {
+
+    const authLinks = (
+        <div className="collapse navbar-collapse collapse-nav ml-auto to-right">
+                <li>
+                    <a onClick={logout} href="#!" className="nav-link logout-link">Logout</a>
+                </li>
+            </div>
+    )
+    const guestLinks = (
+        <div className="collapse navbar-collapse collapse-nav ml-auto to-right">
+                    <Link to="/auth/register" className="nav-link">Register</Link>
+                    <Link to="/auth/login" className="nav-link">Login</Link>
+                </div>
+    )
+
     const [ toggled, setToggled ] = useState(false); 
     
     const handleToggleClick = () => {
         setToggled(!toggled);
     };
 
-    // const handleResourcesInteraction = () => {
-    //     // @todo: show dropdown menu for resources on hover/click. 
-    //     console.log('resources interaction detected');
-    // }
-
+    if(removeHeader){
+        return (
+            <Fragment />
+        )
+    }
     return (
         <div className="navbar navbar-expand-md d-flex">
             <div className="container-fluid">
@@ -22,20 +40,24 @@ const Navbar = () => {
                 <button onClick={handleToggleClick} className={`navbar-toggler ${toggled ? "my-2" : ""}`} type="button" data-bs-toggle="collapse" data-bs-target=".collapse-nav" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                     <i className={`fas ${toggled ? "fa-times" : "fa-bars"} toggle-icon`}></i>
                 </button>
-                <a className="nav-link d-none d-md-inline-block" id="separation-bar">| </a>
                 <div className="collapse navbar-collapse collapse-nav">
-                    {/* <a onMouseOver={handleResourcesInteraction} href={handleResourcesInteraction} className="nav-link" id="resourcesNav">Resources</a> */}
                     {/*Search bar*/}
                     {/*Ask a Question Button*/}
                 </div>
-                <div className="collapse navbar-collapse collapse-nav ml-auto to-right">
-                    <Link to="/auth/register" className="nav-link">Register</Link>
-                    <Link to="/auth/login" className="nav-link">Login</Link>
-                </div>
-                
+                { !loading && (<Fragment>{ isAuthenticated ? authLinks : guestLinks }</Fragment>)}
             </div>
         </div>
     )
 }
 
-export default Navbar; 
+Navbar.propTypes = {
+    logout: PropTypes.func.isRequired, 
+    auth: PropTypes.object.isRequired 
+}
+
+const mapStateToProps = state => ({
+    auth: state.auth, 
+    removeHeader: state.header.state.removeHeader
+}); 
+
+export default connect(mapStateToProps, { logout })(Navbar); 

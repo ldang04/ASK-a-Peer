@@ -5,3 +5,6 @@ export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGIN_FAIL = 'LOGIN_FAIL';
 export const USER_LOADED = 'USER_LOADED'; 
 export const AUTH_ERROR = 'AUTH_ERROR';
+export const LOGOUT = 'LOGOUT';
+export const REMOVE_HEADER = 'REMOVE_HEADER'; 
+export const SHOW_HEADER = 'SHOW_HEADER'; 

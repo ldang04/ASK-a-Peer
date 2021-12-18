@@ -1,15 +1,19 @@
 import './auth.css';
-import React, { useState } from 'react'; 
+import React, { useState, useEffect } from 'react'; 
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { setAlert } from '../../actions/alert';
+import { Link, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { login } from '../../actions/auth';
+import { removeHeader } from '../../actions/header';
 
 import Alert from '../layout/Alert';
  
-const Login = ({ alerts, login }) => {
-   
+const Login = ({ login, removeHeader, isAuthenticated }) => {
+
+    useEffect(() => {
+        removeHeader();
+    }, []); 
+    
     const [formData, setFormData] = useState({
         email: '', 
         password: ''
@@ -22,6 +26,11 @@ const Login = ({ alerts, login }) => {
     const onFormSubmit = e => {
         e.preventDefault();
         login(email, password);
+    }
+
+    // Redirect if logged in 
+    if(isAuthenticated){
+        return <Redirect to="/" />
     }
 
     return (
@@ -74,10 +83,11 @@ const Login = ({ alerts, login }) => {
 }
 
 const mapStateToProps = state => ({
-    alerts: state.alert
+   isAuthenticated: state.auth.isAuthenticated
 });
 
 Login.propTypes = {
-    login: PropTypes.func.isRequired
+    login: PropTypes.func.isRequired, 
+    isAuthenticated: PropTypes.bool
 }
-export default connect(null, { login, setAlert, mapStateToProps })(Login);
+export default connect(mapStateToProps, { login, removeHeader })(Login);
