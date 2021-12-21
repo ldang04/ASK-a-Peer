@@ -1,18 +1,13 @@
 import './auth.css';
-import React, { useState, useEffect } from 'react'; 
+import React, { useState } from 'react'; 
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { login } from '../../actions/auth';
-import { removeHeader } from '../../actions/header';
 
 import Alert from '../layout/Alert';
  
-const Login = ({ login, removeHeader, isAuthenticated }) => {
-
-    useEffect(() => {
-        removeHeader();
-    }, []); 
+const Login = ({ login, isAuthenticated }) => {
     
     const [formData, setFormData] = useState({
         email: '', 
@@ -90,4 +85,4 @@ Login.propTypes = {
     login: PropTypes.func.isRequired, 
     isAuthenticated: PropTypes.bool
 }
-export default connect(mapStateToProps, { login, removeHeader })(Login);
+export default connect(mapStateToProps, { login })(Login);

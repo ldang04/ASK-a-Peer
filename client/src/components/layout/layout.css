@@ -26,6 +26,7 @@ html {
 }
 
 .navbar {
+    position: fixed;
     width: 100%;
     background-color: #00319C;
     padding: 0.5rem 2rem 0.5rem 2rem;
@@ -41,6 +42,7 @@ html {
 }
 
 .navbar-collapse .nav-link {
+    opacity: 1;
     font-size: 1.67rem;
     color: white;
     font-weight: 400;
@@ -49,13 +51,6 @@ html {
 
 #resourcesNav:hover{
     cursor: pointer;
-}
-
-#separation-bar {
-    font-size: 1.67rem;
-    color: white;
-    font-weight: 400;
-    padding-right: 0;
 }
 
 .navbar-toggler:focus, .navbar-toggler:active {

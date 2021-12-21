@@ -1,11 +1,12 @@
 import './layout.css';
-import React, {useState, Fragment, useEffect} from 'react'; 
-import { Link } from 'react-router-dom'; 
+import React, {useState, Fragment} from 'react'; 
+import { Link, useLocation } from 'react-router-dom'; 
 import { connect  } from 'react-redux';
 import PropTypes from 'prop-types';
 import { logout } from '../../actions/auth'; 
 
-const Navbar = ({ auth: { isAuthenticated, loading }, removeHeader, logout }) => {
+const Navbar = ({ auth: { isAuthenticated, loading }, logout }) => {
+    const location = useLocation(); 
 
     const authLinks = (
         <div className="collapse navbar-collapse collapse-nav ml-auto to-right">
@@ -27,7 +28,7 @@ const Navbar = ({ auth: { isAuthenticated, loading }, removeHeader, logout }) =>
         setToggled(!toggled);
     };
 
-    if(removeHeader){
+    if(location.pathname == "/register" || location.pathname == "/login"){
         return (
             <Fragment />
         )
@@ -57,8 +58,7 @@ Navbar.propTypes = {
 }
 
 const mapStateToProps = state => ({
-    auth: state.auth, 
-    removeHeader: state.header.state.removeHeader
+    auth: state.auth
 }); 
 
 export default connect(mapStateToProps, { logout })(Navbar); 

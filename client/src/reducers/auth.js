@@ -4,8 +4,7 @@ import {
     LOGIN_FAIL, 
     USER_LOADED, 
     AUTH_ERROR, 
-    LOGOUT, 
-    REMOVE_HEADER
+    LOGOUT
 } from '../actions/types';
 
 const initialState = {

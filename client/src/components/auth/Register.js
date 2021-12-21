@@ -1,19 +1,14 @@
 import './auth.css';
-import React, { useState, useEffect } from 'react'; 
+import React, { useState } from 'react'; 
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { setAlert } from '../../actions/alert';
 import { register } from '../../actions/auth';
-import { removeHeader } from '../../actions/header';
 import PropTypes from 'prop-types';
 
 import Alert from '../layout/Alert';
  
-const Register = ({register, removeHeader, isAuthenticated}) => {
-
-    useEffect(() => {
-        removeHeader();
-    }, []);
+const Register = ({register, isAuthenticated}) => {
 
     const [formData, setFormData] = useState({
         fullName: '', 
@@ -108,4 +103,4 @@ const mapStateToProps = state => ({
     isAuthenticated: state.auth.isAuthenticated
 });
 
-export default connect(null, { setAlert, register, removeHeader, mapStateToProps })(Register);
+export default connect(null, { setAlert, register, mapStateToProps })(Register);
