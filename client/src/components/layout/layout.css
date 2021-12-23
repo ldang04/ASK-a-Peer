@@ -6,6 +6,7 @@ White: white
 Dark green (border): #009432
 Light green (fill): #F2FFEF
 White component border gray: #CCCCCC 
+Blue highlight color: #2c5abf
 
 default font-size: 10px (1rem)
 
@@ -72,6 +73,22 @@ html {
     font-family: 'Ubuntu';
 }
 
-.logout-link {
+.inline-link {
     display: inline-block;
+}
+
+.pfp-img {
+    height: 3rem;
+    width: 3rem;
+    border-radius: 10rem;
+    margin-right: 1rem;
+}
+
+.profile-btn {
+    border-radius: 10rem;
+}
+
+.profile-btn:hover {
+    background: #2c5abf;
+    border-radius: 10rem;
 }

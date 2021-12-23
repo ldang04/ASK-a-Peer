@@ -17,7 +17,14 @@ const SpacesList = () => {
                 spaceObject.link = `/spaces/${space._id}`;
 
                 spaceArr.push(spaceObject);
-                
+            });
+
+            // Sort spaces alphabetically 
+            // Method source: https://stackoverflow.com/questions/6712034/sort-array-by-firstname-alphabetically-in-javascript/18493652
+            spaceArr.sort((a, b) => {
+                if(a.title < b.title) return -1; 
+                if(a.title > b.title ) return 1;
+                return 
             });
             setSpaces(spaceArr);
             setError(false);

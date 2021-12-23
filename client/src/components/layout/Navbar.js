@@ -5,15 +5,18 @@ import { connect  } from 'react-redux';
 import PropTypes from 'prop-types';
 import { logout } from '../../actions/auth'; 
 
-const Navbar = ({ auth: { isAuthenticated, loading }, logout }) => {
+const Navbar = ({ auth: { isAuthenticated, loading, user }, logout }) => {
     const location = useLocation(); 
+
+    // Logout link 
+    // <a onClick={logout} href="#!" className="nav-link inline-link">Logout</a>
 
     const authLinks = (
         <div className="collapse navbar-collapse collapse-nav ml-auto to-right">
                 <li>
-                    <a onClick={logout} href="#!" className="nav-link logout-link">Logout</a>
+                    <Link to="/me" className="nav-link inline-link profile-btn"><img src={user.avatar} className="pfp-img" alt="Profile Picture" />{user.fullName}</Link>
                 </li>
-            </div>
+        </div>
     )
     const guestLinks = (
         <div className="collapse navbar-collapse collapse-nav ml-auto to-right">
@@ -32,6 +35,10 @@ const Navbar = ({ auth: { isAuthenticated, loading }, logout }) => {
         return (
             <Fragment />
         )
+    }
+
+    if(user == null ){
+        return ({guestLinks})
     }
 
     return (
@@ -58,7 +65,7 @@ Navbar.propTypes = {
 }
 
 const mapStateToProps = state => ({
-    auth: state.auth
+    auth: state.auth, 
 }); 
 
 export default connect(mapStateToProps, { logout })(Navbar); 
