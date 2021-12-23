@@ -18,16 +18,16 @@ export const loadUser = () => async dispatch => {
     }
     try {
         const res = await axios.get('/users/me');
-         console.log(res);
          dispatch({
             type: USER_LOADED, 
             payload: res.data
          });
-       
+       console.log('trying to load user');
+       console.log(res.data);
     } catch (err) {
         dispatch({
             type: AUTH_ERROR
-        })
+        });
     }
 }
 
@@ -89,7 +89,7 @@ export const login = ( email, password ) => async dispatch => {
                 type: LOGIN_SUCCESS, 
                 payload: res.data.token
             });
-            // dispatch(loadUser());
+            dispatch(loadUser());
         } catch(err){
             // Handle empty fields
             const errors = err.response.data.errors; 

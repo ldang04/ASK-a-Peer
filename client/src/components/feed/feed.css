@@ -1,3 +1,27 @@
+/* Color Scheme: 
+Andover blue: #00319C
+Light selection blue: #6292FA
+Light gray: #F2F2F2
+White: white
+Dark green (border): #009432
+Light green (fill): #F2FFEF
+White component border gray: #CCCCCC 
+
+default font-size: 10px (1rem)
+
+(everything divided by 1.5 from Adobe XD plan)
+ASK-a-Peer large font: 30
+Large font (general): 22.7
+Medium/Small font: 16.7
+Login/Register page fonts
+ASC-a-Peer title font: 56
+Login font: 23
+Else: 16.7
+
+*/
+body {
+    background-color: #F2F2F2;
+}
 /* Guest Main CSS ================ */
 .landing-left{
     padding: 0;
@@ -70,11 +94,58 @@
 
 /* Authenticated Main =================÷ */
 
-.temp-col {
-    background: purple;
-    height: 100vh;
+.auth-main-1 {
+    padding-top: 9rem;
 }
 
-.temp-col-2 {
-    background: blue;
+.auth-main-2 {
+    padding-top: 9rem;
+}
+
+.spaces-list-container {
+    padding: 1rem;
+    padding-right: 3rem;
+}
+
+.card h3 {
+    margin-left: 2rem;
+    margin-bottom: 1rem;
+    font-size: 2.27rem;
+    font-family: 'Ubuntu'; 
+}
+
+.card-under {
+    margin-top: 3rem;
+}
+
+.auth-main-error {
+    font-size: 1.67rem;
+    font-family: 'Ubuntu'; 
+    margin-left: 2rem;
+}
+
+.space-link {
+    font-family: 'Ubuntu'; 
+    color: #00319C;
+    font-size: 1.67rem;
+    text-decoration: none;
+    margin: 0;
+    list-style: none;
+    padding-left: 0;
+}
+
+.space-link-hr {
+    margin: 0.5rem;
+    color: #00319C;
+}
+
+.auth-main-small-text {
+    font-family: 'Ubuntu';
+    font-size: 1.67rem;
+    margin-left: 2rem;
+    font-weight: 300;
+}
+
+.small-text-i {
+    margin-top: 2rem;
 }

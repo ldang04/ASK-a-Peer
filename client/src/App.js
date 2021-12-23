@@ -1,6 +1,6 @@
 import './App.css';
 import React, {Fragment, useEffect, useState} from 'react'; 
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'; 
+import { BrowserRouter as Router, Route, Switch, useLocation } from 'react-router-dom'; 
 
 import Navbar from './components/layout/Navbar'; 
 import Register from './components/auth/Register'; 
@@ -12,14 +12,23 @@ import { Provider } from 'react-redux';
 import store from './store';
 import { loadUser } from './actions/auth';
 import setAuthToken from './utils/setAuthToken';
-
-if (localStorage.token) {
-  setAuthToken(localStorage.token);
-}
+import { LOGOUT } from './actions/types';
 
 const App = () => {
+
   useEffect(() => {
-    store.dispatch(loadUser());
+    if(localStorage.token){
+      setAuthToken(localStorage.token);
+    }
+    store.dispatch(loadUser()).then(() => {
+      console.log('user loaded');
+    });
+
+    window.addEventListener('storage', () => {
+      if(!localStorage.token){
+        store.dispatch({ type: LOGOUT });
+      }
+    });
   }, []);
 
   return (

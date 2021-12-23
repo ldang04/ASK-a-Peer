@@ -28,7 +28,7 @@ const Navbar = ({ auth: { isAuthenticated, loading }, logout }) => {
         setToggled(!toggled);
     };
 
-    if(location.pathname == "/register" || location.pathname == "/login"){
+    if(location.pathname === "/register" || location.pathname === "/login"){
         return (
             <Fragment />
         )
