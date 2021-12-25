@@ -1,15 +1,15 @@
 import './feed.css';
-import React, {Fragment, useEffect} from 'react'; 
+import React from 'react'; 
 import { connect } from 'react-redux';
-import { loadUser } from '../../actions/auth';
 import { Redirect } from 'react-router-dom';
 
 import SpacesList from './SpacesList';
 
-const Dashboard = (user) => {
-    if (user == null ){
+const Dashboard = (user, loading) => {
+    if (user == null && !loading ){
         return <Redirect to="/login" />
     }
+    
     return (
         <div>
             <div className="row justify-content-center">
@@ -58,7 +58,8 @@ const Dashboard = (user) => {
 }
 
 const mapStateToProps = state => ({
-    user: state.auth.user
+    user: state.auth.user, 
+    loading: state.auth.loading
 });
 
 export default connect(mapStateToProps)(Dashboard); 

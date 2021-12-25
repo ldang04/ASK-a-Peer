@@ -32,7 +32,7 @@ const Register = ({register, isAuthenticated}) => {
 
      // Redirect if logged in 
      if(isAuthenticated){
-        return <Redirect to="/main" />
+        return <Redirect to="/dashboard" />
     }
 
     return (

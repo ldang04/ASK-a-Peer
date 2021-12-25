@@ -14,7 +14,7 @@ const initialState = {
     user: null, 
 }
 
-export default function (state = initialState, action) {
+const authReducer = (state = initialState, action) => {
     const { type, payload } = action; 
     switch(type) {
         case USER_LOADED: 
@@ -27,7 +27,7 @@ export default function (state = initialState, action) {
         case LOGIN_SUCCESS: 
             localStorage.setItem('token', payload);
             return {
-                ... state, 
+                ...state, 
                 token: payload,
                 isAuthenticated: true, 
                 loading: false, 
@@ -38,7 +38,7 @@ export default function (state = initialState, action) {
         case LOGOUT:
             localStorage.removeItem('token'); 
             return {
-                ... state, 
+                ...state, 
                 token: null, 
                 isAuthenticated: false, 
                 loading: false, 
@@ -48,3 +48,4 @@ export default function (state = initialState, action) {
     }
 }
 
+export default authReducer; 

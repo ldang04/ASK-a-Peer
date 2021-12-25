@@ -1,8 +1,8 @@
 import './feed.css';
-import React, {Fragment, useEffect} from 'react'; 
-import { connect } from 'react-redux';
+import React from 'react'; 
 
-const Main = ({ auth: { isAuthenticated, loading }}) => {
+const Main = () => {
+
     return (
         <div className="row">
             <div className="col-12 col-lg-7 landing-left">
@@ -21,9 +21,5 @@ const Main = ({ auth: { isAuthenticated, loading }}) => {
     )
 }
 
-const mapStateToProps = (state) => ({
-    auth: state.auth
-}); 
-
-export default connect(mapStateToProps)(Main);
+export default (Main);
 
