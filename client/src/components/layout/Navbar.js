@@ -20,7 +20,7 @@ const Navbar = ({ auth: { isAuthenticated, loading, user }}) => {
 
     const dashboardLink = (
         <Fragment>
-            { (location.pathnane !== '/dashboard') ? <Link to="/dashboard" className="nav-link inline-link d-block d-md-inline-block">Dashboard</Link> : <Fragment /> }
+            { (location.pathnane !== '/dashboard') ? <Link to="/dashboard" className="nav-link inline-link d-inline-block dashboard-btn"><i class="fas fa-th"></i></Link> : <Fragment /> }
         </Fragment>
     )
 

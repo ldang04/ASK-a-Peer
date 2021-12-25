@@ -29,10 +29,9 @@ router.get('/me', auth, async (req, res) => {
         response.pronouns = user.pronouns; 
         response.admin = user.admin; 
         response.bio = user.bio; 
-        response.backgroundPicture = user.backgroundPicture;
         
         // Spaces 
-        const spaces = await Space.find({ members: user._id }).select(['title', 'backgroundPicture']);
+        const spaces = await Space.find({ members: user._id }).select(['title']);
 
         if(spaces){
             response.spaces = spaces; 
@@ -119,7 +118,6 @@ router.post('/me', auth , async (req, res) => {
         avatar, 
         pronouns,
         bio, 
-        backgroundPicture
     } = req.body; 
 
     // Build user object 
@@ -135,7 +133,6 @@ router.post('/me', auth , async (req, res) => {
     if(avatar) userFields.avatar = avatar;
     if(pronouns) userFields.pronouns = pronouns; 
     if(bio) userFields.bio = bio; 
-    if(backgroundPicture) userFields.backgroundPicture = backgroundPicture; 
 
     try {
         let user = await User.findOne({ _id: req.user.id });
@@ -177,10 +174,9 @@ router.get('/:user_id', async (req,res) => {
         response.pronouns = user.pronouns; 
         response.admin = user.admin; 
         response.bio = user.bio; 
-        response.backgroundPicture = user.backgroundPicture;
         
         // Spaces 
-        const spaces = await Space.find({ members: user._id }).select(['title', 'backgroundPicture']);
+        const spaces = await Space.find({ members: user._id }).select(['title']);
 
         if(spaces){
             response.spaces = spaces; 

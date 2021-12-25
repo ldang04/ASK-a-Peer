@@ -42,16 +42,33 @@ html {
     margin-right: 0.3rem;
 }
 
+.dashboard-btn {
+    color: white;
+    padding: 0.5rem;
+    padding-bottom: 0;
+    padding-top: 1rem;
+    padding-left:1rem;
+    padding-right: 1rem;
+    /* padding-bottom: 0.75rem; */
+    border-radius: 10rem;
+}
+
+.dashboard-btn:hover, .dashboard-btn:active {
+    color: white;
+}
+
+.dashboard-btn i {
+    font-size: 2rem;
+}
 .navbar-collapse .nav-link {
     opacity: 1;
     font-size: 1.67rem;
     color: white;
     font-weight: 400;
-    /* background-color: red; */
 }
 
-#resourcesNav:hover{
-    cursor: pointer;
+li {
+    list-style: none;
 }
 
 .navbar-toggler:focus, .navbar-toggler:active {

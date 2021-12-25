@@ -9,7 +9,7 @@ const UserProfile = ({auth: { loading, user }, logout}) => {
     if(!loading){
         return (
             <div>
-                <div style={{"background-image": `url(${user.backgroundPicture})`}} className="profile-header" />
+                <div className="profile-header" />
                 <div className="container">
                     <div className="row justify-content-center">
                         <div className="col-12 col-sm-3 profile-col-1">
