@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from 'react'; 
 import axios from 'axios'; 
 import { Link } from 'react-router-dom';
+import Spinner from '../loading/Spinner'; 
 
 const SpacesList = () => {
     const [spaces, setSpaces ] = useState([]); 
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     
     // Fetch spaces 
@@ -17,6 +19,7 @@ const SpacesList = () => {
                 spaceObject.link = `/spaces/${space._id}`;
 
                 spaceArr.push(spaceObject);
+                setLoading(false);
             });
 
             // Sort spaces alphabetically 
@@ -51,7 +54,19 @@ const SpacesList = () => {
         )
     }); 
 
+    if(loading){
+        return (
+            <div className="spaces-card card">
+            <div className="spaces-list-container">
+                <h3> Study Spaces </h3>
+                <Spinner />
+            </div>
+        </div>
+        )
+    }
+
     if(error){
+        setLoading(false);
         return (
             <div className="spaces-card card">
             <div className="spaces-list-container">
@@ -61,6 +76,7 @@ const SpacesList = () => {
         </div>
         )
     }
+
     return (
         <div className="spaces-card card">
             <div className="spaces-list-container">

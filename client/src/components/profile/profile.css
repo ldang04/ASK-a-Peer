@@ -74,6 +74,13 @@ Else: 16.7
         margin-left: auto;
         margin-right: auto;
     }
+    .profile-col-1 h3{
+        text-align: center;
+        margin-top: 12rem;
+    }
+    .profile-col-1 p {
+        text-align: center;
+    }
 }
 
 .profile-description {
@@ -100,6 +107,21 @@ Else: 16.7
     font-size: 1.67rem;
     display: block;
 }
+@media only screen and (max-width: 576px) {
+    .profile-btns {
+        display: flex;
+        justify-content: center;
+    }
+    .edit-btn {
+        display: inline-block;
+        margin-right: 1rem;
+        margin-bottom: 0;
+    }
+    .logout-btn {
+        display: inline-block;
+    }
+}
+
 
 .profile-pronouns {
     margin-top: 0.5rem;

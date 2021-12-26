@@ -22,8 +22,6 @@ export const loadUser = () => async dispatch => {
             type: USER_LOADED, 
             payload: res.data
          });
-       console.log('trying to load user');
-       console.log(res.data);
     } catch (err) {
         dispatch({
             type: AUTH_ERROR
@@ -59,7 +57,6 @@ export const register = ({ fullName, email, password }) => async dispatch => {
                 errors.forEach(error => {
                     dispatch(setAlert(error.msg, 'danger'));
                 });
-                console.log(errors);
             }
             // Handle repeat user 
             const error = err.response.data.error; 
@@ -91,8 +88,6 @@ export const login = ( email, password ) => async dispatch => {
             });
             dispatch(loadUser());
         } catch(err){
-            console.log('error handling'); 
-            console.log(err);
             // Handle empty fields
             const errors = err.response.data.errors; 
 
@@ -100,7 +95,6 @@ export const login = ( email, password ) => async dispatch => {
                 errors.forEach(error => {
                     dispatch(setAlert(error.msg, 'danger'));
                 });
-                console.log(errors);
             }
             // Handle repeat user 
             const error = err.response.data.error; 

@@ -24,12 +24,15 @@ const UserSchema = new mongoose.Schema({
     },
     pronouns: {
         type: String,
+        default: ''
     },
     admin: {
-        type: Boolean
+        type: Boolean, 
+        default: false
     }, 
     bio: {
-        type: String
+        type: String, 
+        default: ''
     }
 });
 

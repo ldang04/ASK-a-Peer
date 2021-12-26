@@ -23,9 +23,7 @@ const App = () => {
     if(localStorage.token){
       setAuthToken(localStorage.token);
     }
-    store.dispatch(loadUser()).then(() => {
-      console.log('user loaded');
-    });
+    store.dispatch(loadUser());
 
     window.addEventListener('storage', () => {
       if(!localStorage.token){

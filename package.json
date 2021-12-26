@@ -20,7 +20,8 @@
     "express-validator": "^6.12.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.13.3",
-    "nodemailer": "^6.6.3"
+    "nodemailer": "^6.6.3",
+    "object-path": "^0.11.8"
   },
   "devDependencies": {
     "nodemon": "^2.0.12"
