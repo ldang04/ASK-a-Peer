@@ -20,9 +20,9 @@ const Navbar = ({ auth: { isAuthenticated, loading, user }}) => {
     }
 
     const dashboardLink = (
-        <Fragment>
-            { (location.pathnane !== '/dashboard') ? <Link to="/dashboard" className="dashboard-btn d-flex"><i class="fas fa-th"></i></Link> : <Fragment /> }
-        </Fragment>
+        <span>
+            { (location.pathnane !== '/dashboard') ? <Link to="/dashboard" className="d-inline-block dashboard-btn nav-link"><i class="fas fa-th"></i></Link> : <Fragment /> }
+        </span>
     )
 
     if(loading){
@@ -30,8 +30,6 @@ const Navbar = ({ auth: { isAuthenticated, loading, user }}) => {
             <div className="navbar navbar-expand-md d-flex">
                 <div className="container-fluid">
                     <Link to="/" className="navbar-brand" >ASK-a-Peer</Link>
-                    <div className="row justify-content-center"></div>
-                        <Loader />
                     </div>
             </div>
         )
@@ -39,18 +37,15 @@ const Navbar = ({ auth: { isAuthenticated, loading, user }}) => {
 
     if(!loading && isAuthenticated){
         return (
-            <div className="navbar d-flex align-items-end">
+            <div className="navbar d-flex">
             <div className="container-fluid"> 
                 <Link to="/dashboard" className="navbar-brand" >ASK-a-Peer</Link>
-                {dashboardLink}
                 {/*Search bar*/}
                 {/*Ask a Question Button*/}
-
-                <div className="ml-auto to-right">
-                    <li>
-                        <Link to="/me" className="nav-link inline-link profile-btn"><img src={user ? user.avatar : ''} className="pfp-img" alt="Profile Picture" />{user ? user.fullName : ''}</Link>
-                    </li>
-                </div>
+                <div className=" ml-auto to-right">
+                    {dashboardLink}
+                    <span className="profile-btn-container"> <Link to="/me" className="profile-btn"><img src={user ? user.avatar : ''} className="pfp-img" alt="Profile Picture" /><span className="profile-btn-text">{user ? user.fullName : ''}</span></Link></span>
+                </div>     
             </div>
         </div>
         )

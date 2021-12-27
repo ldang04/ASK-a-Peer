@@ -8,6 +8,7 @@ import {
     USER_LOADED, 
     AUTH_ERROR, 
     LOGOUT, 
+    UPDATE_USER
 } from './types'; 
 
 import setAuthToken from '../utils/setAuthToken';
@@ -115,3 +116,22 @@ export const logout = () => dispatch => {
     dispatch({ type: LOGOUT }); 
 }
 
+//Update user 
+export const updateUser = ({ avatar, bio, pronouns }) => async dispatch => {
+    try {
+        console.log('update user hit');
+         const config = {'Content-Type': 'application/json'}
+         const body = {avatar, bio, pronouns}        
+         // TODO: fix axios post request (not working ????)
+        const res = await axios.post('/users/me', body, config);
+        console.log(res);
+         dispatch(setAlert(res.data.msg, 'success'));
+         dispatch({
+             type: UPDATE_USER,
+             payload: res.data.user
+         }); 
+    } catch(err) { // TODO: Error handling post 
+        console.log(err);
+    }
+ } 
+ 

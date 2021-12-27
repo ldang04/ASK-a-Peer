@@ -21,6 +21,7 @@ app.use('/questions', require('./routes/questions'));
 app.use('/answers', require('./routes/answers'));
 app.use('/comments', require('./routes/comments'));
 app.use('/users', require('./routes/users'));
+app.use('/', require('./routes/report'));
 
 const PORT = process.env.PORT || 5000;
 

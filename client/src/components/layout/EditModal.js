@@ -3,12 +3,8 @@ import React, {useState, useEffect} from 'react';
 import objectPath from 'object-path';
 
 const EditModal = ({  dataTarget, modalHeader, inputs, onEditSubmit, currentImage }) => {
-    const [formData, setFormData] = useState(null);
-    const [selectedImage, setSelectedImage] = useState('');
-
-    useEffect(() => {
-        setSelectedImage(currentImage);
-    },[]);
+    const [selectedImage, setSelectedImage] = useState(currentImage);
+    const [formData, setFormData] = useState({avatar: selectedImage});
 
     const handleImageClick = e => {
         e.preventDefault();
@@ -30,7 +26,7 @@ const EditModal = ({  dataTarget, modalHeader, inputs, onEditSubmit, currentImag
             return (
                 <div className="form-group" key={input.name}>
                     <label className="form-label-text">{input.label}</label>
-                    <input type="text" className="form-control" name={input.name} value={valuePath} onChange={e => onInputChange(e)}/>
+                    <input type="text" className="form-control" name={input.name} value={valuePath} defaultValue={input.value} onChange={e => onInputChange(e)}/>
                 </div>
             )
         } else if (input.inputType == "textarea"){
@@ -38,7 +34,7 @@ const EditModal = ({  dataTarget, modalHeader, inputs, onEditSubmit, currentImag
             return (
                 <div className="form-group" key={input.name}>
                     <label className="form-label-text">{input.label}</label>
-                    <input type="textarea" className="form-control" name={input.name} value={valuePath} onChange={e => onInputChange(e)}/>
+                    <input type="textarea" className="form-control" name={input.name} value={valuePath} defaultValue={input.value} onChange={e => onInputChange(e)}/>
                 </div>
             )
         } else if (input.inputType == "imageSelection"){

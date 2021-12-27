@@ -4,7 +4,8 @@ import {
     LOGIN_FAIL, 
     USER_LOADED, 
     AUTH_ERROR, 
-    LOGOUT
+    LOGOUT, 
+    UPDATE_USER
 } from '../actions/types';
 
 const initialState = {
@@ -17,13 +18,25 @@ const initialState = {
 const authReducer = (state = initialState, action) => {
     const { type, payload } = action; 
     switch(type) {
-        case USER_LOADED: 
+        case USER_LOADED:
         return {
             ...state,
             user: payload,
             isAuthenticated: true,
             loading: false,
         }
+        case UPDATE_USER:
+            return {
+                ...state,
+                user: {
+                    ...state.user,
+                    pronouns: payload.pronouns,
+                    bio: payload.bio,
+                    avatar: payload.avatar
+                }, 
+                isAuthenticated: true,
+                loading: false
+            }
         case LOGIN_SUCCESS: 
             localStorage.setItem('token', payload);
             return {

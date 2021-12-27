@@ -1,14 +1,14 @@
 import './profile.css';
-import React, {Fragment, useState} from 'react'; 
+import React, {Fragment, useEffect} from 'react'; 
 import { connect } from 'react-redux'; 
-import { logout } from '../../actions/auth'; 
+import { logout, updateUser } from '../../actions/auth'; 
 import AnswerList from './AnswersList'; 
 import EditModal from '../layout/EditModal'; 
-import axios from 'axios';
 
-const UserProfile = ({auth: { loading, user }, logout}) => {
+const UserProfile = ({auth: { loading, user }, logout, updateUser}) => {
 
-    // TODO: user profile rerender after edit 
+    if(!loading){
+         // TODO: user profile rerender after edit 
     const editInputs = [
         {
             label: "Profile Picture",
@@ -43,23 +43,14 @@ const UserProfile = ({auth: { loading, user }, logout}) => {
     ];
 
     const onEditSubmit = (editValues) => {
-       if(editValues === null){
+        if(editValues === null){
            return true;
        } 
-
-       const header = {
-           'Content-Type': 'application/json'       }
-       axios.post('/users/me', editValues, header)
-       .then((res) => {
-           console.log(res);
-       })
-       .catch((err) => {
-           console.log(err);
-       });
-
+       updateUser(editValues);
+       document.getElementById("edit-modal").classList.remove("show", "d-block");
+       document.querySelectorAll(".modal-backdrop")
+            .forEach(el => el.classList.remove("modal-backdrop"));
     }
-
-    if(!loading){
         return (
             <div>
                 <EditModal modalHeader="Edit Profile" dataTarget="edit-modal" inputs={editInputs} currentImage={user.avatar} onEditSubmit={onEditSubmit}/>
@@ -75,8 +66,8 @@ const UserProfile = ({auth: { loading, user }, logout}) => {
                                 
                             </div>
                             <div className="profile-btns">
-                                <button className="btn btn-success edit-btn" data-toggle="modal" data-target="#edit-modal"><i class="fas fa-pen"></i> Edit</button>
-                                <button onClick={logout} className="btn btn-primary logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                                <button className="btn btn-success edit-btn" data-toggle="modal" data-target="#edit-modal"><i className="fas fa-pen"></i> Edit</button>
+                                <button onClick={logout} className="btn btn-primary logout-btn"><i className="fas fa-sign-out-alt"></i> Logout</button>
                             </div>
                         </div>
                         <div className="col-12 col-sm-8 profile-col-2">
@@ -95,7 +86,7 @@ const UserProfile = ({auth: { loading, user }, logout}) => {
 }
 
 const mapStateToProps = state => ({
-    auth: state.auth
-})
+    auth: state.auth, 
+});
 
-export default connect(mapStateToProps, {logout })(UserProfile); 
+export default connect(mapStateToProps, {logout, updateUser })(UserProfile); 

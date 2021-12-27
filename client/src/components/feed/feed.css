@@ -211,3 +211,19 @@ body {
     margin-top: 2rem;
 }
 
+.report-container {
+    margin-left: 2rem;
+}
+
+.report-container label {
+    font-size: 1.67rem;
+    font-family: 'Ubuntu';
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+}
+
+.report-btn {
+    font-family: 'Ubuntu';
+    font-size: 1.67rem;
+    margin-bottom: 1rem;
+}

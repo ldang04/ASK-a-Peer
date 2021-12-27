@@ -146,7 +146,7 @@ router.post('/me', auth , async (req, res) => {
 
          user = await User.findOne({ _id: req.user.id }).select('-password');
             
-         return res.json({msg: 'User updated'});
+         return res.json({ user });
     } catch (err) {
         console.error(err.message);
         res.status(500).send({error: 'Server Error'});
