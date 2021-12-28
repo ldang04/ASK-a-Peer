@@ -9,25 +9,30 @@ const { check, validationResult } = require('express-validator');
 // @access  Public
 
 router.post('/report', [
-    check('subject', ' Please enter a subject for your report')
+    check('subject', ' Please enter a brief title describing the nature of your problem')
     .not()
     .isEmpty(),
-    check('email', 'Please enter a valid email')
-    .isEmail(), 
-    check('problem', 'Please describe your problem')
+    check('email', 'Authorization error. You may not be logged in or properly authorized. Refresh the page or try again later')
     .not()
-    .isEmpty()
+    .isEmpty(),
+    check('problem', 'Please describe your problem as specifically as possible')
+    .not()
+    .isEmpty(),
+    check('instructions', 'Please describe what steps we can take to reproduce the problem that you experienced')
 ], async (req, res) => {
-    const error = validationResult(req);
-    if(!error.isEmpty()){
-        return res.status(400).send({ error: error.errors[0].msg }); 
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json({ errors: errors.array() }); 
     }
-    const { subject, email, problem } = req.body;
+    const { subject, problem, email, instructions } = req.body;
     try {
         const sendEmail = async () => {
             const emailBody = `
-                    <p>The following error has been reported by an ASK-a-Peer user (${email}):</p>
-                    <h3 style="color: red;">${problem}</h3>
+                    <h3>The following error has been reported by an ASK-a-Peer user (${email}):</h3>
+                    <h4 style="color: red;">Error description: </h4>
+                    <p style="color: red;">${problem}</p>
+                    <h4 style="color: red;">Steps to reproduce error: </h4>
+                    <p style="color: red;">${instructions}</p>
                 `
                 // Send account verification email
                 let transporter = nodemailer.createTransport({
@@ -50,7 +55,7 @@ router.post('/report', [
         sendEmail();
         res.json({ msg: 'Report submitted! Thanks to user feedback, we are able to continually improve ASK-a-Peer, and make it the best platform it can be'});
     } catch (err) {
-        console.error(err.message);
+        console.log(err);
         res.status(500).send({error: 'Server error'});
     }
 }); 

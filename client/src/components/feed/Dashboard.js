@@ -1,15 +1,50 @@
 import './feed.css';
-import React from 'react'; 
+import React, {useState, useEffect} from 'react'; 
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
+import axios from 'axios';
+import { setAlert } from '../../actions/alert';
+import Alert from '../layout/Alert';
+// import { loadUser } from '../../actions/auth';
 
 import SpacesList from './SpacesList';
 
-const Dashboard = (user, loading) => {
-    if (user == null && !loading ){
+const Dashboard = ({auth, user, loading, setAlert}) => {
+    const [formData, setFormData ] = useState({
+        subject: '',
+        problem: '',
+        instructions: ''
+    });
+
+    if (!user && !loading ){
         return <Redirect to="/login" />
     }
     
+    if(loading){
+        return <div>Loading....</div>
+    }
+
+    const onInputChange = e => setFormData({...formData, [e.target.name]: e.target.value, ["email"]: user.email}); 
+
+    const onReportSubmit = async (e) => {
+    
+        e.preventDefault();
+        try {
+            const config = { 'Content-Type': 'application.json'};
+            const res = await axios.post('/report', formData, config); 
+
+            console.log(res);
+            setAlert(res.data.msg, 'success');
+        } catch (err){
+            const errors = err.response.data.errors;
+            if(errors){
+                errors.forEach(error => {
+                    setAlert(error.msg, 'danger');
+                });
+            }
+        }
+    }
+
     return (
         <div>
             <div className="row justify-content-center">
@@ -55,29 +90,35 @@ const Dashboard = (user, loading) => {
                             <div className="welcome-container">
                                 <h3>Report a Problem</h3>
                                 <div className="report-container">
-                                    <form>
+                                    <Alert />
+                                    <form onSubmit={onReportSubmit}>
                                         <div className="form-group">
-                                            <label>Subject</label>
-                                            <input type="text" className="form-control"/>
+                                            <label>Brief problem title (e.g. Website crashed) </label>
+                                            <input type="text" onChange={onInputChange} value={formData.subject} className="form-control"  name="subject"/>
                                         </div>
                                         <div className="form-group">
                                             <label>Problem description (be as specific as possible!)</label>
-                                            <input type="text" className="form-control"/>
+                                            <input type="text" onChange={onInputChange} value={formData.problem} className="form-control" name="problem" />
                                         </div>
-                                        <button type="button" className="report-btn btn btn-primary">Submit</button>
+                                        <div className="form-group">
+                                            <label>Steps to reproduce the problem</label>
+                                            <input type="text" onChange={onInputChange} value={formData.instructions} className="form-control" name="instructions"/>
+                                        </div>
+                                        <button type="submit" className="report-btn btn btn-primary">Submit</button>
                                     </form>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>f
                     </div>
             </div>
     )
 }
 
 const mapStateToProps = state => ({
+    auth: state.auth,
     user: state.auth.user, 
     loading: state.auth.loading
 });
 
-export default connect(mapStateToProps)(Dashboard); 
+export default connect(mapStateToProps, {setAlert})(Dashboard); 

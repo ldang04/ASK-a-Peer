@@ -102,7 +102,6 @@ router.get('/me', auth, async (req, res) => {
     res.json(response);
 
     } catch (err) {
-        console.log('catch')
         console.error(err.message);
         res.status(500).send({error: 'Server Error'});
     }

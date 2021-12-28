@@ -10,6 +10,7 @@ import Main from './components/feed/Main';
 import Dashboard from './components/feed/Dashboard';
 import UserProfile from './components/profile/UserProfile'; 
 import PrivateRoute from './components/routing/PrivateRoute';
+import Space from './components/space/Space';
 
 import { Provider } from 'react-redux'; 
 import store from './store';
@@ -44,6 +45,7 @@ const App = () => {
               <Route exact path="/auth/confirmation/:user_token" component={Confirmation} />
               <PrivateRoute exact path="/dashboard" component={Dashboard} />
               <PrivateRoute exact path="/me" component={UserProfile} />
+              <PrivateRoute exact path="/spaces/:space_id" component={Space} />
             </Switch>
         </Fragment>
         </Router>

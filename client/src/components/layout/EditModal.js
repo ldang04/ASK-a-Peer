@@ -61,7 +61,7 @@ const EditModal = ({  dataTarget, modalHeader, inputs, onEditSubmit, currentImag
     });
 
     return (
-        <div className="modal fade" id={dataTarget} tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div className="modal fade" id={dataTarget} tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div className="modal-dialog modal-lg" role="document">
                 <div className="modal-content">
                     <div className="modal-header">

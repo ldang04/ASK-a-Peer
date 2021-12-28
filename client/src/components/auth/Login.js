@@ -3,11 +3,11 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { login } from '../../actions/auth';
+import { login, loadUser } from '../../actions/auth';
 
 import Alert from '../layout/Alert';
  
-const Login = ({ login, isAuthenticated }) => {
+const Login = ({ login, isAuthenticated, loadUser }) => {
     
     const [formData, setFormData] = useState({
         email: '', 
@@ -49,7 +49,7 @@ const Login = ({ login, isAuthenticated }) => {
                                                             value={email}
                                                             className="form-control" 
                                                             placeholder="Email" 
-                                                            onChange={e => onInputChange(e)} />
+                                                            onChange={onInputChange} />
                                                     </div>
                                                     <div className="form-div-mod">
                                                         <input 
@@ -58,7 +58,7 @@ const Login = ({ login, isAuthenticated }) => {
                                                             value={password}
                                                             className="form-control" 
                                                             placeholder="Password" 
-                                                            onChange={e => onInputChange(e)} />
+                                                            onChange={onInputChange} />
                                                     </div>
                                                     {/* TODO: Complete password reset */}
                                                     <div className="form-text mb-4"><Link to="/auth/register">Forgot your password?</Link></div> 
@@ -85,4 +85,4 @@ Login.propTypes = {
     login: PropTypes.func.isRequired, 
     isAuthenticated: PropTypes.bool
 }
-export default connect(mapStateToProps, { login })(Login);
+export default connect(mapStateToProps, { login, loadUser })(Login);

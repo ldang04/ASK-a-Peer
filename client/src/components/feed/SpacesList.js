@@ -39,15 +39,14 @@ const SpacesList = () => {
     // Get spaces from server 
     useEffect(() => {
         fetchSpaces();
-        console.log(spaces);
     }, []); 
 
     // Dynamically render spaces 
     const renderedSpaces = spaces.map((space, index) => {
         return (
-            <div>
+            <div key={space.title}>
                 <ol className="space-link">
-                    <Link to={space.link} className="space-link" key={index}>{space.title}</Link>
+                    <Link to={space.link} className="space-link">{space.title}</Link>
                 </ol>
                 <hr className="space-link-hr"/>
             </div>

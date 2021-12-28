@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { logout, updateUser } from '../../actions/auth'; 
 import AnswerList from './AnswersList'; 
 import EditModal from '../layout/EditModal'; 
+import Alert from '../../components/layout/Alert';
 
 const UserProfile = ({auth: { loading, user }, logout, updateUser}) => {
 
@@ -54,7 +55,11 @@ const UserProfile = ({auth: { loading, user }, logout, updateUser}) => {
         return (
             <div>
                 <EditModal modalHeader="Edit Profile" dataTarget="edit-modal" inputs={editInputs} currentImage={user.avatar} onEditSubmit={onEditSubmit}/>
-                <div className="profile-header" />
+                <div className="profile-header container">
+                    <div style={{position: "relative", top: "8rem"}}>
+                        <Alert />
+                    </div>
+                </div>
                 <div className="container">
                     <div className="row justify-content-center">
                         <div className="col-12 col-sm-3 profile-col-1">

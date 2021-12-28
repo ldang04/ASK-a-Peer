@@ -21,7 +21,7 @@ const Navbar = ({ auth: { isAuthenticated, loading, user }}) => {
 
     const dashboardLink = (
         <span>
-            { (location.pathnane !== '/dashboard') ? <Link to="/dashboard" className="d-inline-block dashboard-btn nav-link"><i class="fas fa-th"></i></Link> : <Fragment /> }
+            { (location.pathnane !== '/dashboard') ? <Link to="/dashboard" className="d-inline-block dashboard-btn nav-link"><i className="fas fa-th"></i></Link> : <Fragment /> }
         </span>
     )
 

@@ -79,7 +79,7 @@ export const login = ( email, password ) => async dispatch => {
             'Content-Type': 'application/json'
         }
     }
-        const body = JSON.stringify({ email, password });
+        const body = { email, password };
 
         try {
             const res = await axios.post('/auth/login', body, config); 
@@ -89,10 +89,12 @@ export const login = ( email, password ) => async dispatch => {
             });
             dispatch(loadUser());
         } catch(err){
+            console.log('========== from auth.js error hit ==========');
+            console.log(err);
             // Handle empty fields
             const errors = err.response.data.errors; 
 
-            if(errors){
+            if(err.response.data.errors){
                 errors.forEach(error => {
                     dispatch(setAlert(error.msg, 'danger'));
                 });
@@ -125,13 +127,13 @@ export const updateUser = ({ avatar, bio, pronouns }) => async dispatch => {
          // TODO: fix axios post request (not working ????)
         const res = await axios.post('/users/me', body, config);
         console.log(res);
-         dispatch(setAlert(res.data.msg, 'success'));
+         dispatch(setAlert('User Updated', 'success'));
          dispatch({
              type: UPDATE_USER,
              payload: res.data.user
          }); 
     } catch(err) { // TODO: Error handling post 
-        console.log(err);
+        dispatch(setAlert('Something went wrong. Refresh the page or try again later', 'danger'));
     }
  } 
  
