@@ -5,18 +5,19 @@ import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 import { setAlert } from '../../actions/alert';
 import Alert from '../layout/Alert';
+
 // import { loadUser } from '../../actions/auth';
 
 import SpacesList from './SpacesList';
 
-const Dashboard = ({auth, user, loading, setAlert}) => {
+const Dashboard = ({auth: { isAuthenticated, user }, loading, setAlert }) => {
     const [formData, setFormData ] = useState({
         subject: '',
         problem: '',
         instructions: ''
     });
 
-    if (!user && !loading ){
+    if (!isAuthenticated && !loading ){
         return <Redirect to="/login" />
     }
     
@@ -56,7 +57,7 @@ const Dashboard = ({auth, user, loading, setAlert}) => {
                 <div className="col-sm-7 auth-main-2 order-1 order-sm-2">
                         <div className="card dash-container">
                             <div className="welcome-container">
-                                <h3>Welcome to ASK-a-Peer! {user.fullName} </h3>
+                                <h3>Welcome to ASK-a-Peer! </h3>
                                 <p className="auth-main-small-text"> Ask or answer course-specific questions in a study space, reach out to a peer tutor via their profile page, or access the Academic Skills Centers' resources below. Encounter a problem? Fill out the report form below, or email ddang23@andover.edu or edarling23@andover.edu directly. </p>
                                 <p className="auth-main-small-text small-text-i"><i>This application was made possible by the <a href="https://www.andover.edu/alumni/alumni-connect/abbot-academy/abbot-academy-fund">Abbot Academy Fund</a>, continuing Abbot's tradition of boldness, innovation, and caring.</i></p>
                             </div>
@@ -117,7 +118,6 @@ const Dashboard = ({auth, user, loading, setAlert}) => {
 
 const mapStateToProps = state => ({
     auth: state.auth,
-    user: state.auth.user, 
     loading: state.auth.loading
 });
 

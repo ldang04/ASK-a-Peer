@@ -38,7 +38,7 @@ const UserProfile = ({auth: { loading, user }, logout, updateUser}) => {
         {
             label: "Bio", 
             name: "bio",
-            inputType: "textarea", 
+            inputType: "text", 
             value: user.bio
         }
     ];

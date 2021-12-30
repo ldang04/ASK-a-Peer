@@ -162,11 +162,11 @@ router.post('/:answer_id/vote', auth, async (req, res) => {
             const userIndex = answer.upvotes.indexOf(user._id);
             answer.upvotes.splice(userIndex, 1);
             await answer.save(); 
-            res.json({msg: 'Answer downvoted'});
+            res.json({votes: answer.upvotes});
         } else {
             answer.upvotes.push(user._id);
             await answer.save();
-            res.json({ msg: 'Answer upvoted'});
+            res.json({ answer });
         }
     } catch (err) {
         if(err.kind == 'ObjectId'){

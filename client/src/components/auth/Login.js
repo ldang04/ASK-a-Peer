@@ -66,7 +66,7 @@ const Login = ({ login, isAuthenticated, loadUser }) => {
                                                         <button type="submit" className="form-control auth-button">L O G I N</button>
                                                     </div>
                                                     </form>
-                                                    <p className="form-subtext"> Don't have an account? <Link to="/auth/register"><span className="form-subtext-link">Register</span></Link></p>
+                                                    <p className="form-subtext"> Don't have an account? <Link to="/register"><span className="form-subtext-link">Register</span></Link></p>
                                             </div>
                                     </div>
                                 </div>

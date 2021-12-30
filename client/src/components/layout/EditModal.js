@@ -21,12 +21,22 @@ const EditModal = ({  dataTarget, modalHeader, inputs, onEditSubmit, currentImag
     const onInputChange = e => setFormData({...formData, [e.target.name]: e.target.value}); 
 
     const renderedInputs = inputs.map((input) => {
+        console.log(input.value);
         if(input.inputType == "text"){
             let valuePath = objectPath.get(formData, input.value);
+            // let valuePath = null;
+            if(input.value === "" && input.name === 'pronouns'){
+                valuePath = ""; 
+            } else if (input.value === "" && input.name === 'bio'){
+                valuePath = "";
+            } else {
+                valuePath = objectPath.get(formData, input.value);
+            }
+            console.log('value path: ', valuePath)
             return (
                 <div className="form-group" key={input.name}>
                     <label className="form-label-text">{input.label}</label>
-                    <input type="text" className="form-control" name={input.name} value={valuePath} defaultValue={input.value} onChange={e => onInputChange(e)}/>
+                    <input type="text" className="form-control" name={input.name} value={valuePath} defaultValue={(input.value === "") ? "" : input.value } onChange={e => onInputChange(e)}/>
                 </div>
             )
         } else if (input.inputType == "textarea"){
@@ -34,7 +44,7 @@ const EditModal = ({  dataTarget, modalHeader, inputs, onEditSubmit, currentImag
             return (
                 <div className="form-group" key={input.name}>
                     <label className="form-label-text">{input.label}</label>
-                    <input type="textarea" className="form-control" name={input.name} value={valuePath} defaultValue={input.value} onChange={e => onInputChange(e)}/>
+                    <input type="textarea" className="form-control" name={input.name} value={valuePath} defaultValue={(input.value === "") ? "" : input.value} onChange={e => onInputChange(e)}/>
                 </div>
             )
         } else if (input.inputType == "imageSelection"){

@@ -44,7 +44,7 @@ const SpacesList = () => {
     // Dynamically render spaces 
     const renderedSpaces = spaces.map((space, index) => {
         return (
-            <div key={space.title}>
+            <div key={index}>
                 <ol className="space-link">
                     <Link to={space.link} className="space-link">{space.title}</Link>
                 </ol>

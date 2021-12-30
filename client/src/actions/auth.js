@@ -13,9 +13,8 @@ import {
 
 import setAuthToken from '../utils/setAuthToken';
 export const loadUser = () => async dispatch => {
-    // Set global auth token 
     if(localStorage.token){ // if logged in, then should have token
-        setAuthToken(localStorage.token);
+        setAuthToken(localStorage.token); 
     }
     try {
         const res = await axios.get('/users/me');
@@ -83,14 +82,14 @@ export const login = ( email, password ) => async dispatch => {
 
         try {
             const res = await axios.post('/auth/login', body, config); 
+            localStorage.setItem('token', res.data.token)
             dispatch({
                 type: LOGIN_SUCCESS, 
                 payload: res.data.token
             });
+
             dispatch(loadUser());
         } catch(err){
-            console.log('========== from auth.js error hit ==========');
-            console.log(err);
             // Handle empty fields
             const errors = err.response.data.errors; 
 
@@ -121,12 +120,10 @@ export const logout = () => dispatch => {
 //Update user 
 export const updateUser = ({ avatar, bio, pronouns }) => async dispatch => {
     try {
-        console.log('update user hit');
          const config = {'Content-Type': 'application/json'}
          const body = {avatar, bio, pronouns}        
          // TODO: fix axios post request (not working ????)
         const res = await axios.post('/users/me', body, config);
-        console.log(res);
          dispatch(setAlert('User Updated', 'success'));
          dispatch({
              type: UPDATE_USER,

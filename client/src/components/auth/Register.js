@@ -82,7 +82,7 @@ const Register = ({register, isAuthenticated}) => {
                                                         <button type="submit" className="form-control auth-button">R E G I S T E R</button>
                                                     </div>
                                                     </form>
-                                                    <p className="form-subtext"> Already have an account? <Link to="/auth/login"><span className="form-subtext-link">Login</span></Link></p>
+                                                    <p className="form-subtext"> Already have an account? <Link to="/login"><span className="form-subtext-link">Login</span></Link></p>
                                             </div>
                                     </div>
                                 </div>
