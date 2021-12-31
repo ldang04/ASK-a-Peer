@@ -57,17 +57,23 @@ router.post('/', [auth, [
 });
 
 // @route   POST /spaces/:space_id
-// @desc    Edit the title of a space
+// @desc    Edit a space
 // @access  Private (admin access)
 
 router.post('/:space_id', [auth, [
-    check('title', 'Title is required').isString()
+    check('title', 'Title is required')
+    .not()
+    .isEmpty(),
+    check('admins', 'At least one admin is required in a space')
+    .not()
+    .isEmpty(),
+    check('moderators', 'Invalid moderator input')
+    .exists()
 ]], async (req,res) => {
     const error = validationResult(req); 
     if(!error.isEmpty()){
         return res.status(400).json({ error: error.errors[0].msg});
     }
-
     try {
         const user = await User.findOne({ _id: req.user.id });
         let space = await Space.findOne({ _id: req.params.space_id }); 
@@ -78,16 +84,45 @@ router.post('/:space_id', [auth, [
 
         // Check if user has admin access
         if (user.admin || space.admins.includes(user._id)){
-            const newTitle = {title: req.body.title}; 
+            // const newTitle = {title: req.body.title}; 
+            const admins = req.body.admins; 
+            const moderators = req.body.moderators; 
+            let foundAdmins; 
 
-            space = await Space.findOneAndUpdate(
-                { _id: req.params.space_id }, 
-                { $set: newTitle }, 
-                { new: true }
-            ); 
+            try {
+                foundAdmins = await User.find({
+                    email: {
+                        $in: admins
+                    }
+                });
+            }catch(err){
+                return res.status(401).send({ error: 'Could not find admin(s)'})
+            }
+
+            const foundAdminIds = foundAdmins.map(admin => admin._id);
+
+            let foundModerators;
+            try {
+                foundModerators = await User.find({
+                    email: {
+                        $in: moderators
+                    }
+                });
+            } catch (err) {
+                return res.status(401).send({ error: 'Could not find moderator(s)'});
+            }
+            const foundModeratorIds = foundModerators.map(moderator => moderator._id);
     
+            // space = await Space.findOneAndUpdate(
+            //     { _id: req.params.space_id }, 
+            //     { $set: { newTitle }},
+            //     { new: true }
+            // ); 
+            space.title = req.body.title;
+            space.admins = foundAdminIds; 
+            space.moderators = foundModeratorIds; 
             await space.save();
-            res.json({msg: 'Space updated'});
+            res.json({ space });
         } else {
             return res.status(401).send({error: 'Admin access is required to edit a space'});
         }
@@ -151,216 +186,6 @@ router.delete('/:space_id', auth, async (req,res) => {
         }
         console.error(err.message);
         res.json(500).send({error: 'Server Error'});
-    }
-});
-
-// @route   POST /spaces/:space_id/admins
-// @desc    Add admins to a space
-// @access  Private  (admin access)
-
-router.post('/:space_id/admins', [auth, [
-    check('email', 'Enter a valid email to add an admin')
-    .isEmail()
-]], async (req, res) => {
-    const error = validationResult(req); 
-    if(!error.isEmpty()){
-        return res.status(400).json({ error: error.errors[0].msg});
-    }
-    const { email } = req.body; 
-    try{
-        const user = await User.findOne({ _id: req.user.id });
-        const space = await Space.findOne({ _id: req.params.space_id });
-
-        if(!space){
-            return res.status(404).send({ error: 'Space not found'});
-        }
-
-        // Check if user has admin access 
-        if(user.admin || space.admins.includes(user._id)){
-            const newAdmin = await User.findOne({ email });
-            
-            if(!newAdmin){
-                return res.status(404).send({ error: 'User not found'})
-            }
-
-            if(!space.admins.includes(newAdmin._id)){
-                space.admins.push(newAdmin._id); 
-            } else {
-                res.status(400).send({ error: 'User is already an admin of this space'});
-            }
-
-            if(!space.members.includes(newAdmin._id)){
-                space.members.push(newAdmin._id);
-            }
-
-            await space.save();
-            res.json({msg: 'Admin added to space'});
-        } else {
-            res.status(401).send({ error: 'Admin access is required to add a moderator to this space'});
-        }
-    } catch (err){
-        // Handle if space not found 
-        if(err.kind == 'ObjectId'){
-            return res.status(404).send({ error: 'Space not found'});
-        }
-        res.error(err.message);
-        res.status(500).send({error: 'Server Error'});
-    }
-});
-
-// @route   POST /spaces/:space_id/admins/delete
-// @desc    Delete an admin from a space 
-// @access  Private  (admin access)
-
-router.post('/:space_id/admins/delete', [auth, [
-    check('email', 'Enter a valid email to delete an admin')
-    .isEmail()
-]], async (req,res) => {
-    const error = validationResult(req); 
-    if(!error.isEmpty()){
-        return res.status(400).json({ error: error.errors[0].msg});
-    }
-
-    const { email } = req.body; 
-    try {
-        const user = await User.findOne({ _id: req.user.id });
-        const space = await Space.findOne({ _id: req.params.space_id }); 
-
-        if(!space){
-            return res.status(404).send({ error: 'Space not found'});
-        }
-
-        if(user.admin || space.admins.includes(user._id)){
-            const spaceAdmin = await User.findOne({ email }); 
-
-            if(!spaceAdmin){
-                return res.status(404).send({ error: 'User not found'});
-            }
-
-            if(!space.admins.includes(spaceAdmin._id)){
-                return res.status(400).send({ error: 'User is not an admin of this space'});
-            }
-
-            const adminIndex = space.admins.indexOf(spaceAdmin._id); 
-            space.admins.splice(adminIndex, 1);
-
-            await space.save();
-            res.json({msg: 'Admin removed from space'});
-        } else {
-            res.status(401).send({ error: 'Admin access is required to delete an admin'});
-        }
-
-    } catch (err) {
-        // Handle if space isn't found 
-        if(err.kind == 'ObjectId'){
-            return res.status(404).send({ error: 'Space not found'}); 
-        }
-        console.error(err.message);
-        res.status(500).send({error: 'Server Error'});
-    }
-});
-// @route   POST /spaces/:space_id/moderators
-// @desc    Add moderators to a space 
-// @access  Private (admin access)
-
-router.post('/:space_id/moderators', [auth, [
-    check('email', 'Enter a valid email to add a moderator')
-    .isEmail()
-]], async (req, res) => {
-    const error = validationResult(req); 
-    if(!error.isEmpty()){
-        return res.status(400).json({ error: error.errors[0].msg});
-    }
-
-    const { email } = req.body
-    try {
-        const user = await User.findOne({_id: req.user.id});
-        const space = await Space.findOne({ _id: req.params.space_id });
-
-        if(!space){
-            return res.status(404).send({ error: 'Space not found'});
-        }
-
-        // Check if user has admin access 
-        if(user.admin || space.admins.includes(user._id)){
-            const newMod  = await User.findOne({ email }); 
-
-            if(!newMod){
-                return res.status(404).send({ error: 'User not found'});
-            }
-            
-            if(!space.moderators.includes(newMod._id)){
-                space.moderators.push(newMod._id);
-            } else {
-                return res.status(400).send({ error: 'User is already a moderator of this space'});
-            }
-
-            if(!space.members.includes(newMod._id)){
-                space.members.push(newMod._id);
-            }
-
-            await space.save();
-            res.json({msg: 'Moderator added to space'});
-        } else {
-            res.status(401).send({ error: 'Admin access is required to add a moderator to this space'});
-        }
-        
-    } catch (err){
-        if(err.kind == 'ObjectId'){ // Handle if space isn't found
-            return res.status(404).send({ error: 'Space not found'});
-        }
-        console.error(err.message);
-        res.status(500).send({error: 'Server Error'});
-    }
-});
-
-// @route   POST /spaces/:space_id/moderators/delete
-// @desc    Delete a moderator from a space 
-// @access  Private (admin access)
-
-router.post('/:space_id/moderators/delete', [auth, [
-    check('email', 'Enter a valid email to delete a moderator')
-    .isEmail()
-]], async (req,res) => {
-    const error = validationResult(req); 
-    if(!error.isEmpty()){
-        return res.status(400).json({ error: error.errors[0].msg});
-    }
-
-    const { email } = req.body; 
-    try {
-        const user = await User.findOne({_id: req.user.id });
-        const space = await Space.findOne({ _id: req.params.space_id});
-
-        if(!space){
-            return res.status(404).send({ error: 'Space not found'});
-        }
-
-        if(user.admin || space.admins.includes(req.user.id)){
-            const moderator = await User.findOne({ email }); 
-
-            if(!moderator){
-                return res.status(404).send({ error: 'User not found'}); 
-            }
-            
-            if(!space.moderators.includes(moderator._id)){
-                return res.status(400).send({ error: 'User is not a moderator of this space'});
-            }
-
-            const modIndex = space.moderators.indexOf(moderator._id);
-            space.moderators.splice(modIndex, 1);
-
-            await space.save(); 
-            res.json({msg: 'Moderator removed from space'});
-        } else {
-            res.status(401).send({ error: 'Admin access is required to delete a moderator'});
-        }
-    } catch (err){
-        if( err.kind == "ObjectId"){
-            return res.status(404).send({ error: 'Space not found'});
-        }
-        console.error(err.message);
-        res.status(500).send({error: 'Server Error'});
     }
 });
 

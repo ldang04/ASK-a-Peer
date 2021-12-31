@@ -24,7 +24,7 @@ export const getSpace = (spaceId) => async dispatch => {
 export const toggleHelpful = (answerId, spaceId) => async dispatch => {
     try {
         const res = await axios.post(`/answers/${answerId}/vote`);
-        getSpace(spaceId);
+        dispatch(getSpace(spaceId));
     } catch(err){
         console.log(err);
         setAlert('Something went wrong. Refresh the page or try again later', 'danger');

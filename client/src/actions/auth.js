@@ -8,7 +8,8 @@ import {
     USER_LOADED, 
     AUTH_ERROR, 
     LOGOUT, 
-    UPDATE_USER
+    UPDATE_USER, 
+    SPACE_LOGOUT
 } from './types'; 
 
 import setAuthToken from '../utils/setAuthToken';
@@ -115,6 +116,7 @@ export const login = ( email, password ) => async dispatch => {
 
 export const logout = () => dispatch => {
     dispatch({ type: LOGOUT }); 
+    dispatch({ type: SPACE_LOGOUT});
 }
 
 //Update user 

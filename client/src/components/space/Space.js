@@ -6,16 +6,16 @@ import { connect } from 'react-redux';
 import { getSpace, toggleHelpful } from '../../actions/spaces';
 import ModeratorList from './ModeratorList';
 import AdminList from './AdminList';
+import EditModal from '../layout/EditModal';
 
-const Space = ({ auth: { loading, isAuthenticated }, getSpace, space: { space }, toggleHelpful}) => {
+const Space = ({ auth: { loading, isAuthenticated, user }, getSpace, space: { space }, toggleHelpful}) => {
     const location = useLocation();
 
     useEffect(() => {
-        console.log('Space component hit');
         // Find space by space id 
         const spaceId = location.pathname.split('/spaces/')[1];
         getSpace(spaceId);
-    }, []);
+    }, [space]);
 
     if(!isAuthenticated){
         return <Redirect to="/login" />
@@ -30,6 +30,34 @@ const Space = ({ auth: { loading, isAuthenticated }, getSpace, space: { space },
     }
 
     if(space){
+        const adminEmails = space.admins.map(admin => admin.email);
+        const modEmails = space.moderators.map(moderator => moderator.email);
+
+        const spaceEditInputs = [
+            {
+                label: "Space Title",
+                name: "title",
+                inputType: "text", 
+                value: space.title
+            },
+            {
+                label: "Edit admins", 
+                name: "admins", 
+                inputType: "text", 
+                value: adminEmails
+            },
+            {
+                label: "Edit moderators",
+                name:"moderators", 
+                inputType:"text", 
+                value: modEmails
+            }
+        ]
+
+        const onEditSubmit = (data) => {
+            console.log('on edit title hit');
+            console.log(data);
+        }
 
         const renderedAnswers = space.questions.map(question => {
             if(question.answers.length === 0 ){
@@ -55,21 +83,27 @@ const Space = ({ auth: { loading, isAuthenticated }, getSpace, space: { space },
                 );
             
         });
-
+        // dataTarget, modalHeader, inputs, onEditSubmit, currentImage
         return (
-            <div className="row justify-content-center">
-                <div className="space-col-1 col-12 col-sm-4 order-2 order-sm-1">
-                    <div className="container">
-                        <SpaceList />
+            <div>
+                <EditModal dataTarget="space-edit-modal" inputs={spaceEditInputs} modalHeader="Edit Space" onEditSubmit={onEditSubmit} currentImage={null}/>
+                <div className="row justify-content-center">
+                    <div className="space-col-1 col-12 col-sm-4 order-2 order-sm-1">
+                        <div className="container">
+                            <SpaceList />
+                        </div>
                     </div>
-                </div>
-                <div className="space-col-2 col-12 col-sm-7 order-1 order-sm-2">
-                    <div className="card space-card" >
-                        <h3>{space.title}</h3>
-                        <AdminList admins={space.admins}/>
-                        <ModeratorList moderators={space.moderators} />
+                    <div className="space-col-2 col-12 col-sm-7 order-1 order-sm-2">
+                        <div className="card space-card" >
+                            <h3>{space.title}</h3>
+                            <AdminList admins={space.admins}/> 
+                            <ModeratorList moderators={space.moderators} />
+                            <div>
+                                {user.admin ? <button className="btn btn-success edit-btn space-edit-btn" data-toggle="modal" data-target="#space-edit-modal"><i className="fas fa-pen"></i> Edit </button> : <Fragment />}
+                            </div>
+                        </div>
+                        {renderedAnswers}
                     </div>
-                    {renderedAnswers}
                 </div>
             </div>
         )

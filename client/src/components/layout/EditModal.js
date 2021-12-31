@@ -21,18 +21,17 @@ const EditModal = ({  dataTarget, modalHeader, inputs, onEditSubmit, currentImag
     const onInputChange = e => setFormData({...formData, [e.target.name]: e.target.value}); 
 
     const renderedInputs = inputs.map((input) => {
-        console.log(input.value);
         if(input.inputType == "text"){
             let valuePath = objectPath.get(formData, input.value);
-            // let valuePath = null;
             if(input.value === "" && input.name === 'pronouns'){
                 valuePath = ""; 
             } else if (input.value === "" && input.name === 'bio'){
                 valuePath = "";
+            } else if (input.value==="" && input.name === 'email'){
+                valuePath="";
             } else {
                 valuePath = objectPath.get(formData, input.value);
             }
-            console.log('value path: ', valuePath)
             return (
                 <div className="form-group" key={input.name}>
                     <label className="form-label-text">{input.label}</label>

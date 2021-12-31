@@ -3,7 +3,8 @@ import {
     EDIT_SPACE,
     DELETE_SPACE, 
     SPACE_FAIL,
-    TOGGLE_HELPFUL
+    TOGGLE_HELPFUL,
+    SPACE_LOGOUT
 } from '../actions/types';
 
 const initialState = {
@@ -21,19 +22,12 @@ const spaceReducer = (state = initialState, action) => {
                 loading: false
             }
         case SPACE_FAIL: 
+        case SPACE_LOGOUT:
             return {
                 ...state,
                 space: null, 
                 loading: false
             }
-        // case TOGGLE_HELPFUL: 
-        //     return {
-        //         ...state,
-        //         space: {
-        //             ...state.space, 
-        //             answers:
-        //         }
-        //     }
         default: 
             return state
     } 
