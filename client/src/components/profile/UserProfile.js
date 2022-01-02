@@ -33,13 +33,15 @@ const UserProfile = ({auth: { loading, user }, logout, updateUser}) => {
             label: "Pronouns", 
             name: "pronouns",
             inputType: "text", 
-            value: user.pronouns
+            value: user.pronouns,
+            maxLength: null
         }, 
         {
             label: "Bio", 
             name: "bio",
             inputType: "text", 
-            value: user.bio
+            value: user.bio,
+            maxLength: 100
         }
     ];
 
@@ -49,8 +51,7 @@ const UserProfile = ({auth: { loading, user }, logout, updateUser}) => {
        } 
        updateUser(editValues);
        document.getElementById("edit-modal").classList.remove("show", "d-block");
-       document.querySelectorAll(".modal-backdrop")
-            .forEach(el => el.classList.remove("modal-backdrop"));
+       document.querySelectorAll(".modal-backdrop").forEach(el => el.classList.remove("modal-backdrop"));
     }
         return (
             <div>

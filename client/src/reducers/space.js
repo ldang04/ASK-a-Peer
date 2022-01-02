@@ -4,7 +4,8 @@ import {
     DELETE_SPACE, 
     SPACE_FAIL,
     TOGGLE_HELPFUL,
-    SPACE_LOGOUT
+    SPACE_LOGOUT,
+    UPDATE_SPACE
 } from '../actions/types';
 
 const initialState = {
@@ -16,6 +17,7 @@ const spaceReducer = (state = initialState, action) => {
     const { type, payload } = action; 
     switch(type){
         case GET_SPACE: 
+        case UPDATE_SPACE:
             return {
                 ...state, 
                 space: payload,

@@ -8,7 +8,7 @@ const AnswerList = ({ answers }) => {
     const renderedAnswers = answers.map(answer => {
         return (
             <div className="answer-card card" key={answer._id}>
-                <div className="answer-container">
+                <div className="answer-container"> 
                     <Link className="answer-title-link" to={`/answers/${answer._id}`}><h3>{answer.questionName}</h3></Link>
                     <p>{answer.description}</p>
                     <div className="answer-btns">

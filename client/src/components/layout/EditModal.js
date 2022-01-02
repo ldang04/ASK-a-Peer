@@ -1,5 +1,5 @@
 import './layout.css'; 
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Fragment} from 'react';
 import objectPath from 'object-path';
 
 const EditModal = ({  dataTarget, modalHeader, inputs, onEditSubmit, currentImage }) => {
@@ -9,7 +9,7 @@ const EditModal = ({  dataTarget, modalHeader, inputs, onEditSubmit, currentImag
     const handleImageClick = e => {
         e.preventDefault();
         // set selected image using src url. 
-        setSelectedImage(e.target.src);
+        setSelectedImage(e.target.src); 
         setFormData({...formData, ["avatar"] : e.target.src});
     }
 
@@ -35,7 +35,8 @@ const EditModal = ({  dataTarget, modalHeader, inputs, onEditSubmit, currentImag
             return (
                 <div className="form-group" key={input.name}>
                     <label className="form-label-text">{input.label}</label>
-                    <input type="text" className="form-control" name={input.name} value={valuePath} defaultValue={(input.value === "") ? "" : input.value } onChange={e => onInputChange(e)}/>
+                    <input type="text" maxlength={input.maxLength ? input.maxLength : null} className="form-control" name={input.name} value={valuePath} defaultValue={(input.value === "") ? "" : input.value } onChange={e => onInputChange(e)}/>
+                    {input.maxLength ? <div className="form-text" style={{float: 'right'}}>Max. characters: {input.maxLength} </div> : <Fragment />}
                 </div>
             )
         } else if (input.inputType == "textarea"){

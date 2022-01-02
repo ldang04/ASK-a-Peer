@@ -143,12 +143,10 @@
 }
 
 .space-edit-btn {
-    /* margin-left: 1rem;
-    background: none;
-    border: 0;
-    padding: 0;
-    position: relative;
-    top: -0.2rem; */
     margin-left: 2rem;
 }
 
+.delete-btn {
+    font-family: 'Ubuntu'; 
+    font-size: 1.67rem;
+}

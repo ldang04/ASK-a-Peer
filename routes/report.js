@@ -47,7 +47,7 @@ router.post('/report', [
         
                 let info = await transporter.sendMail({
                 from: '"ASK-a-Peer" <askapeer.andover@gmail.com>', 
-                to: "ddang23@andover.edu", 
+                to: "ddang23@andover.edu, edarling23@andover.edu", 
                 subject: `ASK-a-Peer Report: ${subject}`, 
                 html: emailBody,
                 });

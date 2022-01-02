@@ -113,16 +113,21 @@ router.post('/:space_id', [auth, [
             }
             const foundModeratorIds = foundModerators.map(moderator => moderator._id);
     
-            // space = await Space.findOneAndUpdate(
-            //     { _id: req.params.space_id }, 
-            //     { $set: { newTitle }},
-            //     { new: true }
-            // ); 
             space.title = req.body.title;
             space.admins = foundAdminIds; 
             space.moderators = foundModeratorIds; 
+            
             await space.save();
-            res.json({ space });
+            await Space.findOne({ _id: space._id })
+                .populate('admins', ['fullName', 'email', 'avatar', 'pronouns'])
+                .populate('moderators', ['fullName', 'email', 'avatar', 'pronouns'])
+                .exec()
+                .then( space => {
+                    if(!space){
+                        return res.status(404).send({ error: 'Space not found'});
+                    }
+                    return res.json({title: space.title, moderators: space.moderators, admins: space.admins});
+                });
         } else {
             return res.status(401).send({error: 'Admin access is required to edit a space'});
         }

@@ -13,3 +13,4 @@ export const DELETE_SPACE = 'EDIT_SPACE';
 export const SPACE_FAIL = 'SPACE_FAIL';
 export const TOGGLE_HELPFUL = 'TOGGLE_HELPFUL';
 export const SPACE_LOGOUT = 'SPACE_LOGOUT'; 
+export const UPDATE_SPACE = 'UPDATE_SPACE';

@@ -42,6 +42,9 @@ const Navbar = ({ auth: { isAuthenticated, loading, user }}) => {
                 <Link to="/dashboard" className="navbar-brand" >ASK-a-Peer</Link>
                 {/*Search bar*/}
                 {/*Ask a Question Button*/}
+                {/* <form className="form-inline to-right">
+                    <input className="nav-input" placeholder="Search for a question..." />
+                </form> */}
                 <div className=" ml-auto to-right">
                     {dashboardLink}
                     <span className="profile-btn-container"> <Link to="/me" className="profile-btn"><img src={user ? user.avatar : ''} className="pfp-img" alt="Profile Picture" /><span className="profile-btn-text">{user ? user.fullName : ''}</span></Link></span>
