@@ -1,4 +1,4 @@
-import './layout.css'; 
+import './modal.css'; 
 import React, {useState, useEffect, Fragment} from 'react';
 import objectPath from 'object-path';
 
@@ -28,6 +28,8 @@ const EditModal = ({  dataTarget, modalHeader, inputs, onEditSubmit, currentImag
             } else if (input.value === "" && input.name === 'bio'){
                 valuePath = "";
             } else if (input.value==="" && input.name === 'email'){
+                valuePath="";
+            } else if(input.value === "" && input.name === "title"){
                 valuePath="";
             } else {
                 valuePath = objectPath.get(formData, input.value);

@@ -18,7 +18,14 @@ router.get('/', async (req, res) => {
         if(!spaces){
             return res.status(400).send({error: 'Something went wrong. No spaces can be found at this time'});
         }
-        res.json(spaces);
+        
+        // Sort spaces in alphabetical order
+        let sortedSpaces = spaces.sort((a, b) => {
+            if(a.title < b.title) return -1; 
+            if(a.title > b.title ) return 1;
+            return 
+        });
+        res.json(sortedSpaces);
     } catch (err){
         console.error(err.message);
         res.json(500).send({error: 'Server error'});

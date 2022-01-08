@@ -45,12 +45,13 @@ router.post('/', [auth, [
         spaceFields.title = req.body.title; 
         spaceFields.admins.push(req.user.id); 
         spaceFields.members.push(req.user.id);
-        
+                
         space = new Space(spaceFields);
         await space.save();
 
-        res.json({msg: 'Space created'});
+        res.redirect('/spaces');
     } catch (err) {
+        console.log('error caught');
         console.error(err.message);
         res.json(500).send({error: 'Server error'});
     }
@@ -100,7 +101,7 @@ router.post('/:space_id', [auth, [
             }
 
             const foundAdminIds = foundAdmins.map(admin => admin._id);
-
+            
             let foundModerators;
             try {
                 foundModerators = await User.find({
@@ -112,9 +113,9 @@ router.post('/:space_id', [auth, [
                 return res.status(401).send({ error: 'Could not find moderator(s)'});
             }
             const foundModeratorIds = foundModerators.map(moderator => moderator._id);
-    
+            
             space.title = req.body.title;
-            space.admins = foundAdminIds; 
+            if(foundAdminIds.length > 0) space.admins = foundAdminIds;
             space.moderators = foundModeratorIds; 
             
             await space.save();
@@ -131,7 +132,6 @@ router.post('/:space_id', [auth, [
         } else {
             return res.status(401).send({error: 'Admin access is required to edit a space'});
         }
-
     } catch (err) {
         // handle if space isn't found 
         if(err.kind == "ObjectId"){

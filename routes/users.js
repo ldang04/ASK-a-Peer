@@ -112,6 +112,7 @@ router.get('/me', auth, async (req, res) => {
 // @access  Private
 
 router.post('/me', auth , async (req, res) => {
+    console.log(req.body);
     const {
         password,
         avatar, 
@@ -120,7 +121,7 @@ router.post('/me', auth , async (req, res) => {
     } = req.body; 
 
     // Build user object 
-    const userFields = {}; 
+    let userFields = {}; 
     userFields.user = req.user.id; 
     
     if(password){
@@ -131,7 +132,9 @@ router.post('/me', auth , async (req, res) => {
     }
     if(avatar) userFields.avatar = avatar;
     if(pronouns) userFields.pronouns = pronouns; 
+    if(pronouns === "") userFields.pronouns = " "; 
     if(bio) userFields.bio = bio; 
+    if(bio === "") userFields.bio = " "; 
 
     try {
         let user = await User.findOne({ _id: req.user.id });
@@ -144,7 +147,9 @@ router.post('/me', auth , async (req, res) => {
          );
 
          user = await User.findOne({ _id: req.user.id }).select('-password');
-            
+        
+         console.log('user: ');
+         console.log(user);
          return res.json({ user });
     } catch (err) {
         console.error(err.message);

@@ -7,6 +7,7 @@ Dark green (border): #009432
 Light green (fill): #F2FFEF
 White component border gray: #CCCCCC 
 Dark gray: #888888
+Green: #13aa52
 
 default font-size: 10px (1rem)
 
@@ -226,4 +227,73 @@ body {
     font-family: 'Ubuntu';
     font-size: 1.67rem;
     margin-bottom: 1rem;
+}
+
+/* SpaceList css  */
+
+.spacelist-title {
+    display: inline-block;
+}
+.spacelist-btns {
+    display: inline-block;
+    margin-left: 2rem;
+}
+
+@media only screen and (min-width: 920px) {
+    .spacelist-btns {
+        float: right;
+        position: relative;
+        top: 0.4rem;
+    }
+}
+
+@media only screen and (max-width: 576px) {  
+    .spacelist-btns {
+        float: right;
+        position: relative;
+        top: 0.4rem;
+    }
+}
+
+.spacelist-top-btn {
+    margin-left: 1rem;
+    padding: 0;
+    background: none;
+    border: none;
+    position: relative;
+    color: #00319C;
+    top: -0.1rem;
+    font-size: 1.6rem;
+    font-weight: 300;
+    font-family: 'Ubuntu';
+}
+
+
+.spacelist-add-btn {
+    display: inline-block;
+    padding: 0;
+    background: #13aa52;
+    font-family: 'Ubuntu'; 
+    font-size: 0.7rem;
+    margin-right: 0.5rem;
+    /* padding: 1rem; */
+    /* border-radius: 10rem; */
+    /* border: 1px solid #009432; */
+    border: none;
+    background: none;
+}
+
+
+.spacelist-top-btn:focus, .spacelist-add-btn:focus {
+    border: none;
+}
+
+.spacelist-add-btn i {
+    font-size: 1.9rem;
+    color: #009432;
+}
+
+.spacelist-top-btn i{
+    font-size: 1.67rem;
+    color: #00319C;
 }

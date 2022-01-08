@@ -1,92 +1,78 @@
-import React, {useEffect, useState} from 'react'; 
-import axios from 'axios'; 
+import React, {useEffect, useState, Fragment} from 'react'; 
 import { Link } from 'react-router-dom';
 import Spinner from '../loading/Spinner'; 
+import { getAllSpaces } from '../../actions/spaces'; 
+import { connect } from 'react-redux'; 
+import EditSpacelistModal from '../modals/EditSpacelistModal';
 
-const SpacesList = () => {
-    const [spaces, setSpaces ] = useState([]); 
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
-    
-    // Fetch spaces 
-    const fetchSpaces = async () => {
-        try {
-            const res = await axios.get('/spaces'); 
-            let spaceArr = [];
-            res.data.forEach(space => {
-                let spaceObject = {}; 
-                spaceObject.title = space.title; 
-                spaceObject.link = `/spaces/${space._id}`;
+const SpacesList = ({ user, space: { spaces, loading}, getAllSpaces }) => {
+    const [editMode, setEditMode] = useState(false);
 
-                spaceArr.push(spaceObject);
-                setLoading(false);
-            });
-
-            // Sort spaces alphabetically 
-            // Method source: https://stackoverflow.com/questions/6712034/sort-array-by-firstname-alphabetically-in-javascript/18493652
-            spaceArr.sort((a, b) => {
-                if(a.title < b.title) return -1; 
-                if(a.title > b.title ) return 1;
-                return 
-            });
-            setSpaces(spaceArr);
-            setError(false);
-        } catch {
-            setError(true);
-        }
-    }
-
-    // Get spaces from server 
+    // Get spaces
     useEffect(() => {
-        fetchSpaces();
+        getAllSpaces();
     }, []); 
 
-    // Dynamically render spaces 
-    const renderedSpaces = spaces.map((space, index) => {
-        return (
-            <div key={index}>
-                <ol className="space-link">
-                    <Link to={space.link} className="space-link">{space.title}</Link>
-                </ol>
-                <hr className="space-link-hr"/>
-            </div>
-        )
-    }); 
-
-    if(loading){
+    if(loading || !user){
         return (
             <div className="spaces-card card">
             <div className="spaces-list-container">
-                <h3> Study Spaces </h3>
+                <h3> Study Spaces</h3>
                 <Spinner />
             </div>
         </div>
         )
     }
-
-    if(error){
-        setLoading(false);
+   
+    if(user){
+        // Dynamically render spaces 
+        const renderedSpaces = spaces.map((space, index) => {
+            return (
+                <div key={index}>
+                    <ol className="space-link">
+                        <Link to={space.link} className="space-link">{space.title}</Link>
+                    </ol>
+                    <hr className="space-link-hr"/>
+                </div>
+            )
+        }); 
+        
         return (
-            <div className="spaces-card card">
-            <div className="spaces-list-container">
-                <h3> Study Spaces </h3>
-                <p className="auth-main-error">Something went wrong. Refresh the page or try again later.</p>
+            <div>
+                <EditSpacelistModal spaces={spaces} fetchSpaces={getAllSpaces}/>
+                <div className="spaces-card card">
+                    <div className="spaces-list-container">
+                            <h3 className="spacelist-title">Study Spaces</h3>
+                            <span className="spacelist-btns">
+                                {editMode ? <button className="spacelist-add-btn" data-toggle="modal" data-target="#edit-spacelist-modal"><i className="fas fa-plus"></i></button> : <Fragment />}
+                                {user.admin ? <button onClick={() => setEditMode(!editMode)} className="spacelist-top-btn"><i className="fas fa-pen"></i></button> : <Fragment />} 
+                            </span>
+                        <ul>
+                            <hr />
+                            {renderedSpaces}
+                        </ul>
+                    </div>
+                </div>
             </div>
-        </div>
         )
     }
-
     return (
         <div className="spaces-card card">
-            <div className="spaces-list-container">
-                <h3> Study Spaces </h3>
-                <ul>
-                    <hr />
-                    {renderedSpaces}
-                </ul>
-            </div>
+        <div className="spaces-list-container">
+            <h3> Study Spaces</h3>
+            <p className="auth-main-error">Something went wrong. Refresh the page or try again later.</p>
         </div>
+    </div>
     )
 }
 
-export default SpacesList; 
+
+
+
+
+const mapStateToProps = (state) => ({
+    user: state.auth.user, 
+    space: state.space
+});
+
+export default connect(mapStateToProps, { getAllSpaces })(SpacesList); 

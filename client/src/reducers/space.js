@@ -1,14 +1,15 @@
 import { 
+    GET_ALL_SPACES,
     GET_SPACE,
-    EDIT_SPACE,
     DELETE_SPACE, 
     SPACE_FAIL,
-    TOGGLE_HELPFUL,
     SPACE_LOGOUT,
-    UPDATE_SPACE
+    UPDATE_SPACE,
+    CREATE_SPACE
 } from '../actions/types';
 
 const initialState = {
+    spaces: [],
     space: null, 
     loading: true
 }
@@ -16,6 +17,13 @@ const initialState = {
 const spaceReducer = (state = initialState, action) => {
     const { type, payload } = action; 
     switch(type){
+        case GET_ALL_SPACES: 
+        case CREATE_SPACE:
+            return {
+                ...state,
+                spaces: payload,
+                loading: false
+            }
         case GET_SPACE: 
         case UPDATE_SPACE:
             return {

@@ -3,7 +3,6 @@ import React, {useState, Fragment} from 'react';
 import { Link, useLocation } from 'react-router-dom'; 
 import { connect  } from 'react-redux';
 import PropTypes from 'prop-types';
-import Loader from '../loading/Loader'; 
 
 const Navbar = ({ auth: { isAuthenticated, loading, user }}) => {
     const [ toggled, setToggled ] = useState(false);

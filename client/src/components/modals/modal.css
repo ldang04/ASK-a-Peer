@@ -1,0 +1,59 @@
+/* Modal */
+.modal {
+    z-index: 100000;
+}
+
+.modal-title {
+    font-family: 'Ubuntu'; 
+    font-size: 2.27rem;
+    margin-left: 2rem;
+}
+
+.modal-body {
+    padding-left: 3rem;
+    padding-right: 3rem;
+}
+
+.modal-save-btn {
+    font-family: 'Ubuntu'; 
+    font-size: 1.67rem;
+}
+
+.modal-close-btn {
+    font-size: 2rem;
+    padding: 0;
+    border: none;
+    margin-right: 1rem;
+    background: none;
+}
+
+/* Modal Form CSS  */
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.image-selection-btn {
+    background: none;
+    border: 0.5px solid #888888;
+    padding: 0;
+}
+
+.selection-image {
+    height:8rem;
+    width: 8rem;
+}
+
+@media only screen and (min-width: 768px) {
+    .selection-image {
+        height: 7rem;
+        width: 7rem;
+    }
+}
+
+.form-label-text {
+    font-family: 'Ubuntu';
+    font-weight: 300;
+    font-size: 1.67rem;
+    margin-bottom: 0.5rem;
+}

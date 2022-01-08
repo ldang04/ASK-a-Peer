@@ -1,16 +1,16 @@
 import './feed.css';
-import React, {useState, useEffect} from 'react'; 
+import React, {useState} from 'react'; 
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import axios from 'axios';
-import { setAlert } from '../../actions/alert';
-import Alert from '../layout/Alert';
+import { setFormAlert } from '../../actions/alert';
+import FormAlert from '../layout/FormAlert';
 
 // import { loadUser } from '../../actions/auth';
 
 import SpacesList from './SpacesList';
 
-const Dashboard = ({auth: { isAuthenticated, user }, loading, setAlert }) => {
+const Dashboard = ({auth: { isAuthenticated, user }, loading, setFormAlert }) => {
     const [formData, setFormData ] = useState({
         subject: '',
         problem: '',
@@ -35,12 +35,12 @@ const Dashboard = ({auth: { isAuthenticated, user }, loading, setAlert }) => {
             const res = await axios.post('/report', formData, config); 
 
             console.log(res);
-            setAlert(res.data.msg, 'success');
+            setFormAlert(res.data.msg, 'success');
         } catch (err){
             const errors = err.response.data.errors;
             if(errors){
                 errors.forEach(error => {
-                    setAlert(error.msg, 'danger');
+                    setFormAlert(error.msg, 'danger');
                 });
             }
         }
@@ -91,7 +91,7 @@ const Dashboard = ({auth: { isAuthenticated, user }, loading, setAlert }) => {
                             <div className="welcome-container">
                                 <h3>Report a Problem</h3>
                                 <div className="report-container">
-                                    <Alert />
+                                    <FormAlert />
                                     <form onSubmit={onReportSubmit}>
                                         <div className="form-group">
                                             <label>Brief problem title (e.g. Website crashed) </label>
@@ -121,4 +121,4 @@ const mapStateToProps = state => ({
     loading: state.auth.loading
 });
 
-export default connect(mapStateToProps, {setAlert})(Dashboard); 
+export default connect(mapStateToProps, {setFormAlert})(Dashboard); 

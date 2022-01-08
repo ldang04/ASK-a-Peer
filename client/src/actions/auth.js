@@ -123,9 +123,11 @@ export const logout = () => dispatch => {
 export const updateUser = ({ avatar, bio, pronouns }) => async dispatch => {
     try {
          const config = {'Content-Type': 'application/json'}
-         const body = {avatar, bio, pronouns}        
-         // TODO: fix axios post request (not working ????)
-        const res = await axios.post('/users/me', body, config);
+         const body = {avatar, bio, pronouns}; 
+
+         const res = await axios.post('/users/me', body, config);
+         console.log('res');
+         console.log(res.data.user);
          dispatch(setAlert('User Updated', 'success'));
          dispatch({
              type: UPDATE_USER,

@@ -1,15 +1,15 @@
 import './space.css';
-import React, { useEffect, Fragment, useState } from 'react'; 
+import React, { useEffect, Fragment } from 'react'; 
 import SpaceList from '../feed/SpacesList';
 import { useLocation, Redirect, Link } from 'react-router-dom'; 
 import { connect } from 'react-redux'; 
-import { getSpace, updateSpace, toggleHelpful } from '../../actions/spaces';
+import { getSpace, toggleHelpful } from '../../actions/spaces';
 import ModeratorList from './ModeratorList';
 import AdminList from './AdminList';
-import EditModal from '../layout/EditModal';
+import EditSpaceModal from '../modals/EditSpaceModal';
 import Alert from '../layout/Alert';
 
-const Space = ({ auth: { loading, isAuthenticated, user }, getSpace, updateSpace, space: { space },toggleHelpful}) => {
+const Space = ({ auth: { loading, isAuthenticated, user }, getSpace, space: { space },toggleHelpful}) => {
     const location = useLocation();
 
     useEffect(() => {
@@ -31,43 +31,6 @@ const Space = ({ auth: { loading, isAuthenticated, user }, getSpace, updateSpace
     }
 
     if(space){
-
-        const adminEmails = space.admins.map(admin => admin.email);
-        const modEmails = space.moderators.map(moderator => moderator.email);
-
-        const spaceEditInputs = [
-            {
-                label: "Space Title",
-                name: "title",
-                inputType: "text", 
-                value: space.title,
-                maxLength: null
-            },
-            {
-                label: "Edit admins", 
-                name: "admins", 
-                inputType: "text", 
-                value: adminEmails,
-                maxLength: null
-            },
-            {
-                label: "Edit moderators",
-                name:"moderators", 
-                inputType:"text", 
-                value: modEmails,
-                maxLength: null
-            }
-        ]
-
-        const onEditSubmit = (data) => {
-            const spaceMods = space.moderators.map(moderator => moderator.email);
-            const spaceAdmins = space.admins.map(admin => admin.email);
-            const spaceParam = { title: space.title, moderators: spaceMods, admins: spaceAdmins}; 
-            updateSpace(space._id, data, spaceParam);
-            document.getElementById("space-edit-modal").classList.remove("show", "d-block");
-            document.querySelectorAll(".modal-backdrop").forEach(el => el.classList.remove("modal-backdrop"));
-        }
-
         const renderedAnswers = space.questions.map(question => {
             if(question.answers.length === 0 ){
                 return <Fragment key={question._id}/>
@@ -79,7 +42,7 @@ const Space = ({ auth: { loading, isAuthenticated, user }, getSpace, updateSpace
                  <div className="card answer-card" key={question._id}>
                     <div className="answer-container">
                         <Link className="title-link" to={`/questions/${question._id}`}><h3>{question.title}</h3></Link>
-                        <p><i>Answered by <Link to={`/users/${question.answers[0].creator._id}`}>{question.answers[0].creator.fullName}</Link></i></p>
+                        <p style={{color: '#888888'}}><i>Answered by <Link to={`/users/${question.answers[0].creator._id}`}>{question.answers[0].creator.fullName}</Link></i></p>
                         <p>{question.answers[0].description}</p>
                         {(question.answers.length === 2) ? <Link to={`/questions/${question._id}`} className="answer-link">View 1 more answer</Link> : <Fragment />}
                         {(question.answers.length > 2) ? <Link to={`/questions/${question._id}`} className="answer-link">View {(question.answers.length - 1 )} more answers</Link> : <Fragment />}
@@ -96,9 +59,17 @@ const Space = ({ auth: { loading, isAuthenticated, user }, getSpace, updateSpace
             
         });
 
+        const adminEmails = space.admins.map(admin => admin.email);
+        const modEmails = space.moderators.map(moderator => moderator.email);
+
+        const removeModal = () => {
+            document.getElementById("edit-space-modal").classList.remove("show", "d-block");
+            document.querySelectorAll(".modal-backdrop").forEach(el => el.classList.remove("modal-backdrop"));
+        }
+
         return (
             <div>
-                <EditModal dataTarget="space-edit-modal" inputs={spaceEditInputs} modalHeader="Edit Space" onEditSubmit={onEditSubmit} currentImage={null}/>
+                <EditSpaceModal title={space.title} admins={adminEmails.join()} moderators={modEmails.join()} removeModal={removeModal} />
                 <div className="row justify-content-center">
                     <div className="space-col-1 col-12 col-sm-4 order-2 order-sm-1">
                         <div className="container">
@@ -112,7 +83,7 @@ const Space = ({ auth: { loading, isAuthenticated, user }, getSpace, updateSpace
                             <AdminList admins={space.admins}/> 
                             <ModeratorList moderators={space.moderators} />
                             <div>
-                                {user.admin ? <button className="btn btn-success edit-btn space-edit-btn" data-toggle="modal" data-target="#space-edit-modal"><i className="fas fa-pen"></i> Edit </button> : <Fragment />}
+                                {user.admin ? <button className="btn btn-success edit-btn space-edit-btn" data-toggle="modal" data-target="#edit-space-modal"><i className="fas fa-pen"></i> Edit </button> : <Fragment />}
                             </div>
                         </div>
                         {renderedAnswers}
@@ -130,4 +101,4 @@ const mapStateToProps = (state) => ({
     space: state.space
 });
 
-export default connect(mapStateToProps, { getSpace, updateSpace, toggleHelpful })(Space); 
+export default connect(mapStateToProps, { getSpace, toggleHelpful })(Space); 
