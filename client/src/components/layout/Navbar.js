@@ -59,17 +59,14 @@ const Navbar = ({ auth: { isAuthenticated, loading, user }}) => {
                 <div className="container-fluid">
                     
                     <Link to="/" className="navbar-brand" >ASK-a-Peer</Link>
-                    <button onClick={handleToggleClick} className={`navbar-toggler ${toggled ? "my-2" : ""}`} type="button" data-bs-toggle="collapse" data-bs-target=".collapse-nav" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <button onClick={handleToggleClick} className={`navbar-toggler ${toggled ? "my-2" : ""}`} type="button" data-bs-toggle="collapse" data-bs-target=".collapse-nav">
                         <i className={`fas ${toggled ? "fa-times" : "fa-bars"} toggle-icon`}></i>
                     </button>
-                    <div className="collapse navbar-collapse collapse-nav">
-                        {/*Search bar*/}
-                        {/*Ask a Question Button*/}
-                    </div>
+                    
                     <div className="collapse navbar-collapse collapse-nav ml-auto to-right">
                         <Link to="/register" className="nav-link">Register</Link>
                         <Link to="/login" className="nav-link">Login</Link>
-                    </div>                
+                    </div>          
                 </div>
             </div>
         )

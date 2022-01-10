@@ -21,7 +21,7 @@ const EditUserModal = ({ user, updateUser }) => {
         e.preventDefault();
         updateUser(formData);
         document.getElementById("edit-profile-modal").classList.remove("show", "d-block");
-       document.querySelectorAll(".modal-backdrop").forEach(el => el.classList.remove("modal-backdrop"));
+        document.querySelectorAll(".modal-backdrop").forEach(el => el.classList.remove("modal-backdrop"));
     }
 
     const onInputChange = e => setFormData({...formData, [e.target.name]: e.target.value}); 

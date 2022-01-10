@@ -13,6 +13,10 @@ const SpacesList = ({ user, space: { spaces, loading}, getAllSpaces }) => {
         getAllSpaces();
     }, []); 
 
+    useEffect(() => {
+        console.log(editMode);
+    }, [editMode]);
+
     if(loading || !user){
         return (
             <div className="spaces-card card">
@@ -30,16 +34,16 @@ const SpacesList = ({ user, space: { spaces, loading}, getAllSpaces }) => {
             return (
                 <div key={index}>
                     <ol className="space-link">
-                        <Link to={space.link} className="space-link">{space.title}</Link>
+                        <Link to={space.link} className="space-link">{editMode ? <button className="delete-space-btn"><i className="far fa-trash-alt"></i></button> : <Fragment />} <span style={editMode ? {marginRight: "3rem", background: "red"} : {marginRight: "1rem"}}>{space.title}</span></Link>
                     </ol>
                     <hr className="space-link-hr"/>
                 </div>
             )
         }); 
-        
+
         return (
             <div>
-                <EditSpacelistModal spaces={spaces} fetchSpaces={getAllSpaces}/>
+            <EditSpacelistModal />
                 <div className="spaces-card card">
                     <div className="spaces-list-container">
                             <h3 className="spacelist-title">Study Spaces</h3>

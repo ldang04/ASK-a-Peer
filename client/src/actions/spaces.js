@@ -7,6 +7,7 @@ import {
     GET_ALL_SPACES,
     CREATE_SPACE
 } from './types';
+import $ from 'jquery'; 
 
 export const getAllSpaces = () => async dispatch => {
     try {
@@ -79,17 +80,22 @@ export const updateSpace = (spaceId, data) => async dispatch => {
 
 export const createSpace = (data) => async dispatch => {
     try {
-        const config = { 'Content-Type': 'application/json'};
-        const res = await axios.post('/spaces', data, config);
+        // const config = { 'Content-Type': 'application/json'};
+        // const res = await axios.post('/spaces', data, config);
 
-        dispatch({
-            type: CREATE_SPACE,
-            payload: res.data
-        });
-    
+        // dispatch({
+        //     type: CREATE_SPACE,
+        //     payload: res.data
+        // });
+   
+        $(".modal").hide();
+        $('.modal-backdrop').hide();
         // Remove create modal
-        document.getElementById("edit-spacelist-modal").classList.remove("show", "d-block");
-        document.querySelectorAll(".modal-backdrop").forEach(el => el.classList.remove("modal-backdrop"))
+        // $("#edit-spacelist-modal").modal('hide');   
+        // document.getElementById("edit-spacelist-modal").classList.remove("show", "d-block");
+        // document.querySelectorAll(".modal-backdrop").forEach(el => el.classList.remove("modal-backdrop", "fade", "show"));
+        // document.getElementsByTagName("body")[0].classList.remove("modal-open");
+
     } catch(err){
         console.log(err);
         if(err.response){

@@ -14,8 +14,6 @@ const EditSpacelistModal = ({ setAlert, createSpace }) => {
             return setAlert('Space title is required', 'danger');
         }
         createSpace(formData);
-        // fetchSpaces();
-        // removeModal();
     }
 
     const onInputChange = e => setFormData({...formData, [e.target.name]: e.target.value}); 
