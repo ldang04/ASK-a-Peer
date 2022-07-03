@@ -5,9 +5,6 @@ import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 import { setFormAlert } from '../../actions/alert';
 import FormAlert from '../layout/FormAlert';
-
-// import { loadUser } from '../../actions/auth';
-
 import SpacesList from './SpacesList';
 
 const Dashboard = ({auth: { isAuthenticated, user }, loading, setFormAlert }) => {

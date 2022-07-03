@@ -6,7 +6,6 @@ import Navbar from './components/layout/Navbar';
 import Register from './components/auth/Register'; 
 import Login from './components/auth/Login'; 
 import Confirmation from './components/auth/Confirmation';
-import Main from './components/feed/Main';
 import Dashboard from './components/feed/Dashboard';
 import UserProfile from './components/profile/UserProfile'; 
 import PrivateRoute from './components/routing/PrivateRoute';
@@ -39,7 +38,7 @@ const App = () => {
         <Navbar />
           <Fragment>
             <Switch>
-              <Route exact path="/" component={Main} />
+              <PrivateRoute exact path="/" component={Dashboard} />
               <Route exact path="/register" component={Register} /> 
               <Route exact path="/login" component={Login} />
               <Route exact path="/auth/confirmation/:user_token" component={Confirmation} />
