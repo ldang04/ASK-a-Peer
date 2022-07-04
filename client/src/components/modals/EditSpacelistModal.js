@@ -42,8 +42,8 @@ const EditSpacelistModal = ({ setAlert, createSpace }) => {
                     </div>
                     </form>
                 </div>
+            </div>
         </div>
-    </div>
     )
 }
 

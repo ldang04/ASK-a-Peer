@@ -14,6 +14,13 @@
     padding-right: 3rem;
 }
 
+.modal-body p {
+    font-family: 'Ubuntu';
+    font-weight: 300;
+    font-size: 1.67rem;
+    margin-bottom: 0.5rem;
+}
+
 .modal-save-btn {
     font-family: 'Ubuntu'; 
     font-size: 1.67rem;
@@ -56,4 +63,12 @@
     font-weight: 300;
     font-size: 1.67rem;
     margin-bottom: 0.5rem;
+}
+
+/* Modal Other */
+
+.delete-modal-btn {
+    margin: 0.1em;
+    font-family: 'Ubuntu'; 
+    font-size: 1.67rem;
 }

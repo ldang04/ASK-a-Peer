@@ -4,6 +4,7 @@ import Spinner from '../loading/Spinner';
 import { getAllSpaces } from '../../actions/spaces'; 
 import { connect } from 'react-redux'; 
 import EditSpacelistModal from '../modals/EditSpacelistModal';
+import DeleteSpaceModal from '../modals/DeleteSpaceModal';
 
 const SpacesList = ({ user, space: { spaces, loading}, getAllSpaces }) => {
     const [editMode, setEditMode] = useState(false);
@@ -11,11 +12,8 @@ const SpacesList = ({ user, space: { spaces, loading}, getAllSpaces }) => {
     // Get spaces
     useEffect(() => {
         getAllSpaces();
-    }, []); 
-
-    useEffect(() => {
         console.log(editMode);
-    }, [editMode]);
+    }, []); 
 
     if(loading || !user){
         return (
@@ -34,7 +32,8 @@ const SpacesList = ({ user, space: { spaces, loading}, getAllSpaces }) => {
             return (
                 <div key={index}>
                     <ol className="space-link">
-                        <Link to={space.link} className="space-link">{editMode ? <button className="delete-space-btn"><i className="far fa-trash-alt"></i></button> : <Fragment />} <span style={editMode ? {marginRight: "3rem", background: "red"} : {marginRight: "1rem"}}>{space.title}</span></Link>
+                        {editMode ? <span className="delete-space-span"><button className="delete-space-btn" data-toggle="modal" data-target="#delete-space-modal" ><i className="far fa-trash-alt"></i></button></span> : <Fragment />}
+                        <Link to={space.link} className="space-link"><span>{space.title}</span></Link>
                     </ol>
                     <hr className="space-link-hr"/>
                 </div>
@@ -43,6 +42,7 @@ const SpacesList = ({ user, space: { spaces, loading}, getAllSpaces }) => {
 
         return (
             <div>
+            <DeleteSpaceModal />
             <EditSpacelistModal />
                 <div className="spaces-card card">
                     <div className="spaces-list-container">

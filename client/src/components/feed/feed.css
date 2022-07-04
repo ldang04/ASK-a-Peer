@@ -24,34 +24,6 @@ Else: 16.7
 body {
     background-color: #F2F2F2;
 }
-/* Guest Main CSS ================ */
-.landing-left{
-    padding: 0;
-}
-
-.landing-left-container {
-    padding-right: 0;
-    padding-left: 0;
-}
-
-.landing-right {
-    background-color: #00319C;
-    height: 100vh
-}
-
-.landing-title {
-    margin-top: 10rem;
-}
-
-.landing-left h1 {
-	color: black;
-    font-size: 8rem;
-    font-family: 'Open Sans';
-    font-weight: 600;
-    z-index: 1000000000;
-    margin-left: 6rem;
-
-}
 
 /* Responsive title sizing for small screens */
 @media only screen and (max-width: 768px) {  
@@ -166,7 +138,6 @@ body {
     font-size: 1rem;
     text-align: center;
     margin-top: 0.75rem;
-    /* background: red; */
     width: 8rem;
 }
 .card h3 {
@@ -303,6 +274,7 @@ body {
     background: none;
     border: none;
 }
+
 .fa-trash-alt {
     color: #dc3545;
 }
