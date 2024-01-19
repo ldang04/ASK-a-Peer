@@ -1,6 +1,8 @@
 # ASK-a-Peer 
 ## About this project
-ASK-a-Peer is an online platform aiming to increase peer tutoring opportunities for students at Phillips Academy. This project is made possible by the partnership of PA's Academic Skills Center and the Abbot Academy Fund, which graciously provided a $2140 grant toward its development. As it stands, ASK-a-Peer's backend is complete as an Express server that interacts with a MongoDB Atlas database. Its features include JWT authentication, email verification, user/admin authorization, and over a dozen API endpoints that follow RESTful conventions. The frontend of the web app was started with React, and implements a search bar, post/edit features, and profile editing interacting with the backend server. There also exists a SwiftUI version of ASK-a-Peer's frontend (not included in this repository), developed by my collaborator, Evelyn Darling. 
+ASK-a-Peer is an online platform aiming to increase peer tutoring opportunities for students at Phillips Academy. This project is made possible by the partnership of PA's Academic Skills Center and the Abbot Academy Fund, which graciously provided a $2140 grant toward its development. 
+
+As it stands, ASK-a-Peer's backend is complete as an Express server that interacts with a MongoDB Atlas database. Its features include JWT authentication, email verification, user/admin authorization, and over a dozen API endpoints that follow RESTful conventions. The frontend of the web app was started with React, and implements a search bar, post/edit features, and profile editing interacting with the backend server. There also exists a SwiftUI version of ASK-a-Peer's frontend (not included in this repository), developed by my collaborator, Evelyn Darling. 
 
 While the deployment of this platform was delayed, there are ongoing efforts by current Phillips Academy students to revitalize the project. 
 ## Demo
